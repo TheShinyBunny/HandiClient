@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "hcclient",
+  "version": "${version}",
+  "name": "HandiClient",
+  "description": "HandiCraft 3 Client",
+  "authors": [
+    "TheShinyBunny"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/hcclient/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.handicraft.client.client.ClientMod"
+    ],
+    "main": [
+      "com.handicraft.client.CommonMod"
+    ]
+  },
+  "mixins": [
+    "client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.3+build.207",
+    "fabric": "*",
+    "minecraft": "1.16.3"
+  }
+}

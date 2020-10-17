@@ -1,0 +1,14 @@
+{
+  "type": "default",
+  "config": {
+    "top_material": {
+      "Name": "dark_stone"
+    },
+    "under_material": {
+      "Name": "shadow_stone"
+    },
+    "underwater_material": {
+      "Name": "shadow_stone"
+    }
+  }
+}

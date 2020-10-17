@@ -1,0 +1,9 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "hcclient:almoni.ttf",
+      "oversample": 30
+    }
+  ]
+}

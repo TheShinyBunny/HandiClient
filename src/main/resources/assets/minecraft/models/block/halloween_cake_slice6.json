@@ -1,0 +1,22 @@
+{
+    "textures": {
+        "particle": "block/halloween_cake_side",
+        "bottom": "block/halloween_cake_bottom",
+        "top": "block/halloween_cake_top",
+        "side": "block/halloween_cake_side",
+        "inside": "block/halloween_cake_inner"
+    },
+    "elements": [
+        {   "from": [ 13, 0, 1 ],
+            "to": [ 15, 8, 15 ],
+            "faces": {
+                "down":  { "texture": "#bottom", "cullface": "down" },
+                "up":    { "texture": "#top" },
+                "north": { "texture": "#side" },
+                "south": { "texture": "#side" },
+                "west":  { "texture": "#inside" },
+                "east":  { "texture": "#side" }
+            }
+        }
+    ]
+}

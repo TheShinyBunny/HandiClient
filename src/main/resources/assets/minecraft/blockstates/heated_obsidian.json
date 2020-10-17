@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "minecraft:block/heated_obsidian_0"
+    },
+    "age=1": {
+      "model": "minecraft:block/heated_obsidian_1"
+    },
+    "age=2": {
+      "model": "minecraft:block/heated_obsidian_2"
+    },
+    "age=3": {
+      "model": "minecraft:block/heated_obsidian_3"
+    }
+  }
+}

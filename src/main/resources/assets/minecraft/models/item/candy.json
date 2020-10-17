@@ -1,0 +1,62 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "item/blue_toffee"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "kind": 0
+      },
+      "model": "item/candy/blue_toffee"
+    },
+    {
+      "predicate": {
+        "kind": 1
+      },
+      "model": "item/candy/bubble_gum"
+    },
+    {
+      "predicate": {
+        "kind": 2
+      },
+      "model": "item/candy/chocolate"
+    },
+    {
+      "predicate": {
+        "kind": 3
+      },
+      "model": "item/candy/cotton_candy"
+    },
+    {
+      "predicate": {
+        "kind": 4
+      },
+      "model": "item/candy/green_toffee"
+    },
+    {
+      "predicate": {
+        "kind": 5
+      },
+      "model": "item/candy/lollipop"
+    },
+    {
+      "predicate": {
+        "kind": 6
+      },
+      "model": "item/candy/red_toffee"
+    },
+    {
+      "predicate": {
+        "kind": 7
+      },
+      "model": "item/candy/rubber_snake"
+    },
+    {
+      "predicate": {
+        "kind": 8
+      },
+      "model": "item/candy/rubber_strawberry"
+    }
+  ]
+}

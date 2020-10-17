@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "SES",
+    "WWW"
+  ],
+  "key": {
+    "P": [
+      {
+        "item": "minecraft:pumpkin"
+      },
+      {
+        "item": "minecraft:carved_pumpkin"
+      }
+    ],
+    "S": {
+      "item": "minecraft:sugar"
+    },
+    "E": {
+      "item": "minecraft:egg"
+    },
+    "W": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "minecraft:halloween_cake"
+  }
+}

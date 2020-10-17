@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "minecraft:netherite_sword"
+  },
+  "addition": {
+    "item": "minecraft:darkness_star"
+  },
+  "result": {
+    "item": "minecraft:darkness_sword"
+  }
+}

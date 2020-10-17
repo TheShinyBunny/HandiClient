@@ -1,0 +1,19 @@
+{
+  "parent": "block/cube",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "hcclient:block/netherite_furnace_side",
+    "down": "hcclient:block/netherite_furnace_top",
+    "up": "hcclient:block/netherite_furnace_top",
+    "north": "hcclient:block/netherite_furnace_side",
+    "east": "hcclient:block/netherite_furnace_side",
+    "south": "hcclient:block/netherite_furnace_back",
+    "west": "hcclient:block/netherite_furnace_side"
+  }
+}
