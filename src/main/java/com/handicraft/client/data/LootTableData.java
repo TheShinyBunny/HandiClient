@@ -140,6 +140,7 @@ public class LootTableData extends LootTablesProvider {
         drop(consumer, GREEN_FIRE_WALL_TORCH, GREEN_FIRE_TORCH);
         dropSelf(consumer, GREEN_FIRE_LANTERN);
         dropSelf(consumer, PURPLE_FIRE_LANTERN);
+        dropSelf(consumer, DARK_OBSIDIAN);
 
         consumer.accept(HALLOWEEN_CAKE,LootTable.builder());
         dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1);

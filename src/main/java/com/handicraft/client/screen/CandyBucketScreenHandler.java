@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CandyBucketScreenHandler extends ScreenHandler {
 
+    private final PlayerEntity user;
     private final int bucketSlot;
     private final SimpleInventory inventory;
 
@@ -31,6 +32,7 @@ public class CandyBucketScreenHandler extends ScreenHandler {
     public CandyBucketScreenHandler(int syncId, PlayerInventory playerInventory, SimpleInventory inventory, int bucketSlot) {
         super(CommonMod.CANDY_BUCKET_HANDLER_TYPE, syncId);
         int i = (1 - 4) * 18;
+        this.user = playerInventory.player;
         this.inventory = inventory;
         this.bucketSlot = bucketSlot;
 
@@ -86,11 +88,12 @@ public class CandyBucketScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void onContentChanged(Inventory inventory) {
+        super.onContentChanged(inventory);
         int slot = bucketSlot == -1 ? 40 : bucketSlot;
-        ItemStack bucket = player.inventory.getStack(slot);
+        ItemStack bucket = user.inventory.getStack(slot);
         CandyBucketItem.setItems(bucket, ((SimpleInventoryAccessor) inventory).getStacks());
-        player.inventory.setStack(slot,bucket);
+        user.inventory.setStack(slot,bucket);
     }
+
 }

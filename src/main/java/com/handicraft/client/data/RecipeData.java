@@ -147,6 +147,8 @@ public class RecipeData implements DataProvider {
         ShapedRecipeJsonFactory.create(ModItems.PURPLE_FIRE_TORCH,4).pattern("C").pattern("S").pattern("M").input('C',ItemTags.COALS).input('S',STICK).input('M',ModItems.Tags.DARK_STONES).criterion("has_stones",conditionsFromTag(ModItems.Tags.DARK_STONES)).offerTo(consumer);
         surrounded(consumer,GREEN_FIRE_LANTERN,ModItems.GREEN_FIRE_TORCH,IRON_NUGGET);
         surrounded(consumer,PURPLE_FIRE_LANTERN,ModItems.PURPLE_FIRE_TORCH,IRON_NUGGET);
+
+        surrounded(consumer,DARK_OBSIDIAN,DARK_RUBY,OBSIDIAN);
     }
 
     private static void woodType(Consumer<RecipeJsonProvider> consumer, Tag<Item> logs, Block log, Block strippedLog, Block wood, Block strippedWood, Block planks, Block slab, Block stairs, Block fence, Block fenceGate, Block button, Block pressurePlate) {

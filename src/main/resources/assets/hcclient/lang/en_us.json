@@ -50,6 +50,7 @@
   "block.minecraft.purple_fire_lantern": "Purple Darkness Lantern",
   "block.minecraft.green_fire_torch": "Green Darkness Torch",
   "block.minecraft.purple_fire_torch": "Purple Darkness Torch",
+  "block.minecraft.dark_obsidian": "Dark Obsidian",
 
   "item.minecraft.candy.0": "Blue Toffee",
   "item.minecraft.candy.1": "Bubble Gum",
@@ -75,6 +76,9 @@
   "item.minecraft.darkness_sword": "Darkness Sword",
   "item.minecraft.darkness_star": "Darkness Star",
   "item.minecraft.ruby_nugget": "Ruby Nugget",
+  "item.minecraft.darkness_wizard_spawn_egg": "Darkness Wizard Spawn Egg",
+
+  "entity.minecraft.darkness_wizard": "Darkness Wizard",
 
   "enchantment.minecraft.heat_walker": "Heat Walker",
   "enchantment.minecraft.farming_feet": "Farming Feet",

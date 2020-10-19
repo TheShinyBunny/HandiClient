@@ -21,6 +21,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -174,6 +175,9 @@ public class ModBlocks {
     @Register("purple_fire_wall_torch")
     public static final WallTorchBlock PURPLE_FIRE_WALL_TORCH = new DarkWallTorchBlock(FabricBlockSettings.copyOf(Blocks.WALL_TORCH), ParticleTypes.SMOKE);
 
+    @Register("dark_obsidian")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block DARK_OBSIDIAN = new Block(FabricBlockSettings.copyOf(Blocks.CRYING_OBSIDIAN).requiresTool().breakByTool(FabricToolTags.PICKAXES,3));
 
     public static class Tags {
 

@@ -15,9 +15,7 @@ import net.minecraft.text.TranslatableText;
 public class PingCommand implements CustomCommand, Command<ServerCommandSource> {
     @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("ping")
-                .executes(this)
-        );
+        dispatcher.register(literal("ping").executes(this));
     }
 
     @Override
