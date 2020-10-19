@@ -5,6 +5,7 @@
 package com.handicraft.client.mixin.client;
 
 import com.handicraft.client.challenge.client.ChallengesScreen;
+import com.handicraft.client.client.ClientMod;
 import com.handicraft.client.client.screen.NewGameMenuScreen;
 import com.handicraft.client.client.screen.NewTitleScreen;
 import net.minecraft.client.MinecraftClient;
@@ -26,6 +27,7 @@ public class MinecraftClient_ChangeScreens {
 
     @ModifyVariable(method = "openScreen",at = @At(value = "FIELD",opcode = Opcodes.PUTFIELD,target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;",shift = At.Shift.BEFORE))
     private Screen modifyTitleScreen(Screen screen) {
+        if (ClientMod.VANILLA_GUI) return screen;
         if (screen instanceof TitleScreen) {
             return new NewTitleScreen(((TitleScreenAccessor)screen).isDoBackgroundFade());
         }

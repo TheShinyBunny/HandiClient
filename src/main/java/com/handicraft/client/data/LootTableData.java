@@ -7,16 +7,12 @@ package com.handicraft.client.data;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.item.ModItems;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowerBlock;
-import net.minecraft.block.TallPlantBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
@@ -24,13 +20,13 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.server.LootTablesProvider;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.*;
 import net.minecraft.loot.condition.*;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.AlternativeEntry;
-import net.minecraft.loot.entry.GroupEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
@@ -39,19 +35,17 @@ import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.handicraft.client.block.ModBlocks.*;
 
@@ -140,6 +134,13 @@ public class LootTableData extends LootTablesProvider {
         dropSelf(consumer, DARK_ROSE);
         dropSelf(consumer, RUBY_BLOCK);
         dropSelf(consumer, NETHERITE_FURNACE);
+        dropSelf(consumer, GREEN_FIRE_TORCH);
+        dropSelf(consumer, PURPLE_FIRE_TORCH);
+        drop(consumer, PURPLE_FIRE_WALL_TORCH, PURPLE_FIRE_TORCH);
+        drop(consumer, GREEN_FIRE_WALL_TORCH, GREEN_FIRE_TORCH);
+        dropSelf(consumer, GREEN_FIRE_LANTERN);
+        dropSelf(consumer, PURPLE_FIRE_LANTERN);
+
         consumer.accept(HALLOWEEN_CAKE,LootTable.builder());
         dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1);
         dropOre(consumer, DARKNESS_DIAMOND_ORE, Items.DIAMOND, 1, 1);
@@ -148,6 +149,10 @@ public class LootTableData extends LootTablesProvider {
         dropWithSilkTouch(consumer, Blocks.FARMLAND, Blocks.DIRT);
         dropOreWithAdditionalItem(consumer, Blocks.LAPIS_ORE, Items.LAPIS_LAZULI, 4, 9, Items.DIAMOND, 0.3f, 0.1f);
         dropOreWithAdditionalItem(consumer, Blocks.REDSTONE_ORE, Items.REDSTONE, 4, 5, ModItems.RUBY, 0.04f, 0.02f);
+    }
+
+    private static void drop(BiConsumer<Block, LootTable.Builder> consumer, Block block, ItemConvertible drop) {
+        consumer.accept(block,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(drop)).conditionally(SurvivesExplosionLootCondition.builder())));
     }
 
     private static void dropOreWithAdditionalItem(BiConsumer<Block, LootTable.Builder> consumer, Block ore, Item defaultDrop, int min, int max, Item additional, float chance, float fortuneMultiplier) {

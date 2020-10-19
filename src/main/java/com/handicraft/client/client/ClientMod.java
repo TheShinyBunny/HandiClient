@@ -4,7 +4,6 @@
 
 package com.handicraft.client.client;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.challenge.*;
@@ -20,7 +19,6 @@ import com.handicraft.client.fluid.ModFluids;
 import com.handicraft.client.particle.HerobrineContrail;
 import com.handicraft.client.particle.JackOContrailParticle;
 import com.handicraft.client.particle.RubyContrail;
-import com.handicraft.client.screen.CandyBucketScreenHandler;
 import com.handicraft.client.util.CapeHolder;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
@@ -32,6 +30,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -44,6 +43,7 @@ import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.IllusionerEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
@@ -63,8 +63,6 @@ import net.minecraft.world.BlockRenderView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -78,15 +76,15 @@ public class ClientMod implements ClientModInitializer {
     public static final ServerInfo HANDICRAFT_SERVER = new ServerInfo("HandiCraft","handicraft.mc.gg",false);
 
     public static final AtomicBoolean handicraftOnline = new AtomicBoolean(true);
-    public static final boolean VANILLA_BUTTONS = false;
+    public static final boolean VANILLA_GUI = false;
     public static final UnaryOperator<Style> FONT_APPLIER = s->{
-        if (VANILLA_BUTTONS) return s;
+        if (VANILLA_GUI) return s;
         return s.withFont(NOTO);
     };
 
-    private static final MultiplayerServerListPinger SERVER_LIST_PINGER = new MultiplayerServerListPinger();
+    public static final PlayedBoardHud PLAYED_BOARD = new PlayedBoardHud();
 
-    private static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
+    private static final MultiplayerServerListPinger SERVER_LIST_PINGER = new MultiplayerServerListPinger();
 
     public static void requestCape(UUID uuid) {
         if (MinecraftClient.getInstance().getNetworkHandler() != null) {
@@ -104,6 +102,11 @@ public class ClientMod implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DARK_ROSE, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.DARK_SAPLING, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GREEN_DARK_FIRE, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_DARK_FIRE, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GREEN_FIRE_TORCH, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_TORCH, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GREEN_FIRE_WALL_TORCH, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_WALL_TORCH, RenderLayer.getCutout());
 
         ParticleFactoryRegistry.getInstance().register(CommonMod.JACK_O_CONTRAIL_PARTICLE, JackOContrailParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(CommonMod.RUBY_CONTRAIL, RubyContrail.Factory::new);
@@ -114,6 +117,8 @@ public class ClientMod implements ClientModInitializer {
         ScreenRegistry.register(CommonMod.NETHERITE_FURNACE_HANDLER_TYPE, NetheriteFurnaceScreen::new);
         ScreenRegistry.register(CommonMod.SHULKER_PREVIEW_SCREEN_HANDLER_TYPE, ShulkerPreviewScreen::new);
         ScreenRegistry.register(CommonMod.CANDY_BUCKET_HANDLER_TYPE, CandyBucketScreen::new);
+
+        EntityRendererRegistry.INSTANCE.register(CommonMod.DARKNESS_WIZARD, ((dispatcher,ctx)->new IllusionerEntityRenderer(dispatcher)));
 
         ClientSidePacketRegistry.INSTANCE.register(CommonMod.RESPONSE_CAPE_TEXTURE,(ctx, buf) -> {
             UUID id = buf.readUuid();

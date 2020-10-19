@@ -23,6 +23,9 @@ public class AbstractFireBlock_AddCustomFire {
         if (ModBlocks.GREEN_DARK_FIRE.canPlaceAt(world.getBlockState(pos),(WorldView)world,pos)) {
             cir.setReturnValue(ModBlocks.GREEN_DARK_FIRE.getDefaultState());
         }
+        if (ModBlocks.PURPLE_DARK_FIRE.canPlaceAt(world.getBlockState(pos), (WorldView) world,pos)) {
+            cir.setReturnValue(ModBlocks.PURPLE_DARK_FIRE.getDefaultState());
+        }
     }
 
 }

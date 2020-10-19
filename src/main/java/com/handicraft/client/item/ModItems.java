@@ -4,6 +4,7 @@
 
 package com.handicraft.client.item;
 
+import com.handicraft.client.CommonMod;
 import com.handicraft.client.ModSounds;
 import com.handicraft.client.ModTags;
 import com.handicraft.client.block.ModBlocks;
@@ -12,10 +13,7 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -56,10 +54,20 @@ public class ModItems {
     @Register("ruby_nugget")
     public static final Item RUBY_NUGGET = new Item(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON));
 
+    @Register("green_fire_torch")
+    public static final Item GREEN_FIRE_TORCH = new WallStandingBlockItem(ModBlocks.GREEN_FIRE_TORCH,ModBlocks.GREEN_FIRE_WALL_TORCH,new Item.Settings().group(ItemGroup.DECORATIONS));
+
+    @Register("purple_fire_torch")
+    public static final Item PURPLE_FIRE_TORCH = new WallStandingBlockItem(ModBlocks.PURPLE_FIRE_TORCH,ModBlocks.PURPLE_FIRE_WALL_TORCH,new Item.Settings().group(ItemGroup.DECORATIONS));
+
+    @Register("darkness_wizard_spawn_egg")
+    public static final SpawnEggItem DARKNESS_WIZARD_SPAWN_EGG = new SpawnEggItem(CommonMod.DARKNESS_WIZARD,0xffee18fe, 0xff11f521, new Item.Settings().group(ItemGroup.MISC));
+
     public static class Tags {
 
         public static final Tag.Identified<Item> DARK_LOGS = ModTags.item("dark_logs", ModBlocks.DARK_LOG, ModBlocks.DARK_WOOD, ModBlocks.STRIPPED_DARK_LOG, ModBlocks.STRIPPED_DARK_WOOD);
 
         public static final Tag.Identified<Item> PUMPKINS = ModTags.item("pumpkins", Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN);
+        public static final Tag.Identified<Item> DARK_STONES = ModTags.item("dark_stones", ModBlocks.DARK_STONE, ModBlocks.SHADOW_STONE);
     }
 }

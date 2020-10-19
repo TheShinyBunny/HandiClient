@@ -85,7 +85,7 @@ public class NewTitleScreen extends LobbyScreen<NewTitleScreen> {
 
         matrices.push();
         matrices.scale(2.5f,2.5f,1);
-        textRenderer.draw(matrices, new LiteralText("" + ClientCollectibleCache.getPassLevel()).styled(s->ClientMod.VANILLA_BUTTONS ? s : s.withFont(ClientMod.ALMONI)),(int)(110 * swidth),(int)(110 * sheight),-1);
+        textRenderer.draw(matrices, new LiteralText("" + ClientCollectibleCache.getPassLevel()).styled(s->ClientMod.VANILLA_GUI ? s : s.withFont(ClientMod.ALMONI)),(int)(110 * swidth),(int)(110 * sheight),-1);
         matrices.pop();
 
         float f = (float)Math.atan(-(mouseX - width / 2d) / 40.0F);

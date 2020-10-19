@@ -39,7 +39,7 @@ public class HandiDataGenerator {
             adder.make(BlockTags.WOODEN_BUTTONS).add(ModBlocks.DARK_BUTTON);
             adder.make(BlockTags.FENCE_GATES).add(ModBlocks.DARK_FENCE_GATE);
             adder.make(BlockTags.WOODEN_FENCES).add(ModBlocks.DARK_FENCE);
-            adder.make(BlockTags.FIRE).add(ModBlocks.GREEN_DARK_FIRE);
+            adder.make(BlockTags.FIRE).add(ModBlocks.GREEN_DARK_FIRE,ModBlocks.PURPLE_DARK_FIRE);
             adder.make(BlockTags.SMALL_FLOWERS).add(ModBlocks.PEONY);
             adder.make(BlockTags.FLOWER_POTS).add(ModBlocks.POTTED_PEONY);
             adder.make(BlockTags.LEAVES).add(ModBlocks.DARK_LEAVES);

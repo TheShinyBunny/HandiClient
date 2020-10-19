@@ -16,7 +16,7 @@
   "pause.back_to_game": "BACK TO GAME",
   "pause.stats": "STATISTICS",
   "pause.return_to_menu": "RETURN TO LOBBY",
-  "pause.disconnect": "DISCONNECT",
+  "pause.disconnect": "RETURN TO LOBBY",
 
   "block.minecraft.netherite_furnace": "Netherite Furnace",
   "block.minecraft.redstone_ore": "Red Ore",
@@ -46,6 +46,10 @@
   "block.minecraft.dark_button": "Dark Button",
   "block.minecraft.dark_pressure_plate": "Dark Pressure Plate",
   "block.minecraft.dark_sapling": "Dark Sapling",
+  "block.minecraft.green_fire_lantern": "Green Darkness Lantern",
+  "block.minecraft.purple_fire_lantern": "Purple Darkness Lantern",
+  "block.minecraft.green_fire_torch": "Green Darkness Torch",
+  "block.minecraft.purple_fire_torch": "Purple Darkness Torch",
 
   "item.minecraft.candy.0": "Blue Toffee",
   "item.minecraft.candy.1": "Bubble Gum",
@@ -119,7 +123,7 @@
   "commands.claim.success": "You claimed %s!",
   "commands.locker.doesnt_own": "You do not own the %s!",
   "commands.locker.select.unknown": "Unknown collectible '%s'!",
-  "commands.locker.select": "Selected the %s!"
-
+  "commands.locker.select": "Selected the %s!",
+  "commands.ping.response": "Your Ping: %dms"
 
 }

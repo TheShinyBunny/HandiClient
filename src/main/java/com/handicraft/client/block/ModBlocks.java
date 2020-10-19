@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.*;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DyeColor;
@@ -147,13 +148,42 @@ public class ModBlocks {
     @Register("green_dark_fire")
     public static final DarkFireBlock GREEN_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.GREEN).noCollision().breakInstantly().luminance(s->13),Tags.GREEN_FLAMABLES);
 
+    @Register("purple_dark_fire")
+    public static final DarkFireBlock PURPLE_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.PURPLE).noCollision().breakInstantly().luminance(s->13),Tags.PURPLE_FLAMABLES);
+
+    @Register("darkness_portal")
+    public static final DarkPortalBlock DARKNESS_PORTAL = new DarkPortalBlock();
+
+    @Register("green_fire_lantern")
+    @BlockItem(CreativeTab.DECORATION)
+    public static final LanternBlock GREEN_FIRE_LANTERN = new LanternBlock(FabricBlockSettings.copyOf(Blocks.LANTERN));
+
+    @Register("purple_fire_lantern")
+    @BlockItem(CreativeTab.DECORATION)
+    public static final LanternBlock PURPLE_FIRE_LANTERN = new LanternBlock(FabricBlockSettings.copyOf(Blocks.LANTERN));
+
+    @Register("green_fire_torch")
+    public static final TorchBlock GREEN_FIRE_TORCH = new DarkTorchBlock(FabricBlockSettings.copyOf(Blocks.TORCH), ParticleTypes.SMOKE);
+
+    @Register("purple_fire_torch")
+    public static final TorchBlock PURPLE_FIRE_TORCH = new DarkTorchBlock(FabricBlockSettings.copyOf(Blocks.TORCH), ParticleTypes.SMOKE);
+
+    @Register("green_fire_wall_torch")
+    public static final WallTorchBlock GREEN_FIRE_WALL_TORCH = new DarkWallTorchBlock(FabricBlockSettings.copyOf(Blocks.WALL_TORCH), ParticleTypes.SMOKE);
+
+    @Register("purple_fire_wall_torch")
+    public static final WallTorchBlock PURPLE_FIRE_WALL_TORCH = new DarkWallTorchBlock(FabricBlockSettings.copyOf(Blocks.WALL_TORCH), ParticleTypes.SMOKE);
+
+
     public static class Tags {
 
         public static final Tag.Identified<Block> DARK_LOGS = ModTags.block("dark_logs",DARK_LOG,DARK_WOOD,STRIPPED_DARK_LOG,STRIPPED_DARK_WOOD);
 
         public static final Tag.Identified<Block> DARK_STONES = ModTags.block("dark_stones",DARK_STONE,SHADOW_STONE);
 
-        public static final Tag.Identified<Block> GREEN_FLAMABLES = ModTags.block("green_flamables",DARK_STONE,SHADOW_STONE);
+        public static final Tag.Identified<Block> GREEN_FLAMABLES = ModTags.block("green_flamables",DARK_LEAVES);
+
+        public static final Tag.Identified<Block> PURPLE_FLAMABLES = ModTags.block("purple_flamables",DARK_STONE,SHADOW_STONE);
     }
 
 }

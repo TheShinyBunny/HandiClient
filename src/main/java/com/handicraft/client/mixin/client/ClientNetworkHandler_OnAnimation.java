@@ -28,7 +28,7 @@ public class ClientNetworkHandler_OnAnimation {
         Entity e = world.getEntityById(packet.getId());
         if (e != null) {
             if (packet.getAnimationId() == 6) {
-                client.particleManager.addEmitter(e, ParticleTypes.PORTAL);
+                client.particleManager.addEmitter(e, ParticleTypes.WITCH);
             }
         }
     }

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:green_dark_fire"
+    "minecraft:green_dark_fire",
+    "minecraft:purple_dark_fire"
   ]
 }

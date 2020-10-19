@@ -18,6 +18,7 @@
     "EnchantmentHelper_HasFrostOrHeatWalker",
     "EnderChest_CustomUI",
     "Entity_SprintingParticles",
+    "Entity_TeleportToDarkness",
     "FishingRod_OnFish",
     "FlowableFluidAccessor",
     "FlowerForest_AddCustomFlowers",
@@ -56,6 +57,7 @@
     "SimpleInventoryAccessor",
     "SlotAccessor",
     "TreeFeature_AddDarkStoneSoil",
+    "TrunkPlacer_DontPlaceDirt",
     "Villager_OnTrade",
     "WitherRose_PlantOnTop",
     "ZombieVillager_OnCure"
@@ -69,6 +71,7 @@
     "client.ClientWorld_CalculateColors",
     "client.EntityRenderDispatcher_RenderFakePlayer",
     "client.FluidRenderer_MatchWaters",
+    "client.IngameHud_RenderPlayed",
     "client.MinecraftClient_ChangeScreens",
     "client.MinecraftClient_Disconnect",
     "client.MinecraftClient_RenderChallenges",

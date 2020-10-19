@@ -39,7 +39,7 @@ public class PlainColorButton extends ButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        if (ClientMod.VANILLA_BUTTONS) {
+        if (ClientMod.VANILLA_GUI) {
             super.renderButton(matrices, mouseX, mouseY, delta);
         } else {
             fill(matrices, x, y, x + width, y + height, isHovered() && !selected ? hoveredBackground : selected ? selectedBackground : active ? background : 0xff777777);

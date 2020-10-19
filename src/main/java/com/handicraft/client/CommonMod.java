@@ -17,6 +17,7 @@ import com.handicraft.client.data.HandiDataGenerator;
 import com.handicraft.client.emotes.EmoteManager;
 import com.handicraft.client.enchantments.FarmingFeetEnchantment;
 import com.handicraft.client.enchantments.HeatWalkerEnchantment;
+import com.handicraft.client.entity.DarknessWizardEntity;
 import com.handicraft.client.fluid.ModFluids;
 import com.handicraft.client.item.CandySmeltingRecipe;
 import com.handicraft.client.item.ModItems;
@@ -44,6 +45,8 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.tag.TagRegistry;
@@ -55,6 +58,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -77,7 +85,9 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.lang.reflect.Field;
@@ -121,9 +131,12 @@ public class CommonMod implements ModInitializer {
 
     public static final ScreenHandlerType<CandyBucketScreenHandler> CANDY_BUCKET_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:candy_bucket"), CandyBucketScreenHandler::new);
 
+    public static final EntityType<DarknessWizardEntity> DARKNESS_WIZARD = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER,DarknessWizardEntity::new).dimensions(new EntityDimensions(0.6F, 1.95F,true)).trackRangeBlocks(48).fireImmune().build();
+
     public static final Identifier REQUEST_CAPE_TEXTURE = new Identifier("hcclient:request_cape");
     public static final Identifier RESPONSE_CAPE_TEXTURE = new Identifier("hcclient:response_cape");
 
+    public static final List<String> ALTS = Arrays.asList("TheSecondBunny","RotmansCamera","Arbel2008","Barvazy");
 
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
 
@@ -131,6 +144,7 @@ public class CommonMod implements ModInitializer {
     public static final int VERSION = 3;
 
     public static final TimeZone TIME_ZONE = TimeZone.getTimeZone(ZoneId.ofOffset("GMT", ZoneOffset.ofHours(3)));
+    public static final RegistryKey<World> DARKNESS_KEY = RegistryKey.of(Registry.DIMENSION, new Identifier("handicraft:darkness"));
 
     public static float capeModifier() {
         return 42;
@@ -164,6 +178,8 @@ public class CommonMod implements ModInitializer {
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
+        Registry.register(Registry.ENTITY_TYPE,new Identifier("darkness_wizard"),DARKNESS_WIZARD);
+        FabricDefaultAttributeRegistry.register(DARKNESS_WIZARD,DarknessWizardEntity.createIllusionerAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH,200).add(EntityAttributes.GENERIC_FOLLOW_RANGE,48).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS,3f));
 
         ServerSidePacketRegistry.INSTANCE.register(REQUEST_CAPE_TEXTURE,(ctx,buf)->{
             UUID id = buf.readUuid();
@@ -299,6 +315,7 @@ public class CommonMod implements ModInitializer {
         new EmoteCommand().register(dispatcher);
         new HandipassCommand().register(dispatcher);
         new LockerCommand().register(dispatcher);
+        new PingCommand().register(dispatcher);
     }
 
 
