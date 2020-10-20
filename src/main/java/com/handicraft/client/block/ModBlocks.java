@@ -179,6 +179,10 @@ public class ModBlocks {
     @BlockItem(CreativeTab.BLOCKS)
     public static final Block DARK_OBSIDIAN = new Block(FabricBlockSettings.copyOf(Blocks.CRYING_OBSIDIAN).requiresTool().breakByTool(FabricToolTags.PICKAXES,3));
 
+    @Register("darkness_bricks")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block DARKNESS_BRICKS = new Block(FabricBlockSettings.copyOf(Blocks.NETHER_BRICKS).requiresTool().breakByTool(FabricToolTags.PICKAXES));
+
     public static class Tags {
 
         public static final Tag.Identified<Block> DARK_LOGS = ModTags.block("dark_logs",DARK_LOG,DARK_WOOD,STRIPPED_DARK_LOG,STRIPPED_DARK_WOOD);

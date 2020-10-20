@@ -21,7 +21,8 @@ public class TrunkPlacer_DontPlaceDirt {
     private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
         return testableWorld.testBlockState(blockPos, (blockState) -> {
             Block block = blockState.getBlock();
-            return Feature.isSoil(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM) && !blockState.isIn(ModBlocks.Tags.DARK_STONES);
+            if (blockState.isIn(ModBlocks.Tags.DARK_STONES)) return true;
+            return Feature.isSoil(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
         });
     }
 }

@@ -17,8 +17,11 @@ import com.handicraft.client.data.HandiDataGenerator;
 import com.handicraft.client.emotes.EmoteManager;
 import com.handicraft.client.enchantments.FarmingFeetEnchantment;
 import com.handicraft.client.enchantments.HeatWalkerEnchantment;
+import com.handicraft.client.entity.DarkBlazeEntity;
 import com.handicraft.client.entity.DarknessWizardEntity;
 import com.handicraft.client.fluid.ModFluids;
+import com.handicraft.client.gen.structure.DarkFortressStructure;
+import com.handicraft.client.gen.structure.DarkTempleStructure;
 import com.handicraft.client.item.CandySmeltingRecipe;
 import com.handicraft.client.item.ModItems;
 import com.handicraft.client.rewards.*;
@@ -49,6 +52,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -81,13 +85,19 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.structure.StructurePieceType;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.lang.reflect.Field;
@@ -132,11 +142,17 @@ public class CommonMod implements ModInitializer {
     public static final ScreenHandlerType<CandyBucketScreenHandler> CANDY_BUCKET_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:candy_bucket"), CandyBucketScreenHandler::new);
 
     public static final EntityType<DarknessWizardEntity> DARKNESS_WIZARD = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER,DarknessWizardEntity::new).dimensions(new EntityDimensions(0.6F, 1.95F,true)).trackRangeBlocks(48).fireImmune().build();
+    public static final EntityType<DarkBlazeEntity> DARK_BLAZE = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER,DarkBlazeEntity::new).dimensions(new EntityDimensions(0.6F, 1.8F,true)).trackRangeChunks(8).fireImmune().build();
+
 
     public static final Identifier REQUEST_CAPE_TEXTURE = new Identifier("hcclient:request_cape");
     public static final Identifier RESPONSE_CAPE_TEXTURE = new Identifier("hcclient:response_cape");
 
     public static final List<String> ALTS = Arrays.asList("TheSecondBunny","RotmansCamera","Arbel2008","Barvazy");
+
+    public static final StructurePieceType DARK_TEMPLE_PIECE_TYPE = DarkTempleStructure.Generator::new;
+    public static final StructureFeature<DefaultFeatureConfig> DARK_TEMPLE = new DarkTempleStructure();
+    public static final StructureFeature<DefaultFeatureConfig> DARK_FORTRESS = new DarkFortressStructure();
 
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
 
@@ -180,6 +196,20 @@ public class CommonMod implements ModInitializer {
 
         Registry.register(Registry.ENTITY_TYPE,new Identifier("darkness_wizard"),DARKNESS_WIZARD);
         FabricDefaultAttributeRegistry.register(DARKNESS_WIZARD,DarknessWizardEntity.createIllusionerAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH,200).add(EntityAttributes.GENERIC_FOLLOW_RANGE,48).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS,3f));
+
+        Registry.register(Registry.ENTITY_TYPE,new Identifier("dark_blaze"),DARK_BLAZE);
+        FabricDefaultAttributeRegistry.register(DARK_BLAZE,DarkBlazeEntity.createDarkBlazeAttributes());
+
+        Registry.register(Registry.STRUCTURE_PIECE,new Identifier("handicraft","dark_temple_piece"),DARK_TEMPLE_PIECE_TYPE);
+        FabricStructureBuilder.create(new Identifier("handicraft","dark_temple"),DARK_TEMPLE)
+                .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+                .defaultConfig(8,3,27842)
+                .register();
+
+        FabricStructureBuilder.create(new Identifier("handicraft","dark_fortress"),DARK_FORTRESS)
+                .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+                .defaultConfig(20,5,238947)
+                .register();
 
         ServerSidePacketRegistry.INSTANCE.register(REQUEST_CAPE_TEXTURE,(ctx,buf)->{
             UUID id = buf.readUuid();
@@ -316,6 +346,7 @@ public class CommonMod implements ModInitializer {
         new HandipassCommand().register(dispatcher);
         new LockerCommand().register(dispatcher);
         new PingCommand().register(dispatcher);
+        new CanStructGenCommand().register(dispatcher);
     }
 
 

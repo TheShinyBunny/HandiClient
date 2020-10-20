@@ -32,7 +32,12 @@ public class DarkPortalBlock extends NetherPortalBlock {
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
             if (!world.isClient) {
-                entity.moveToWorld(world.getServer().getWorld(RegistryKey.of(Registry.DIMENSION,new Identifier("handicraft:darkness"))));
+                ServerWorld dest = world.getServer().getWorld(RegistryKey.of(Registry.DIMENSION,new Identifier("handicraft:darkness")));
+                if (dest == null) {
+                    System.out.println("NO DARKNESS DIMENSION!");
+                } else {
+                    entity.moveToWorld(dest);
+                }
             }
         }
     }

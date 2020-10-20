@@ -9,7 +9,18 @@
       "sea_level": 63,
       "disable_mob_generation": false,
       "structures": {
-        "structures": {}
+        "structures": {
+          "handicraft:dark_fortress": {
+            "spacing": 20,
+            "separation": 5,
+            "salt": 3873535
+          },
+          "handicraft:dark_temple": {
+            "spacing": 8,
+            "separation": 3,
+            "salt": 3873535
+          }
+        }
       },
       "noise": {
         "random_density_offset": true,

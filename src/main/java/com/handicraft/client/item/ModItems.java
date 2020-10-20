@@ -60,8 +60,6 @@ public class ModItems {
     @Register("purple_fire_torch")
     public static final Item PURPLE_FIRE_TORCH = new WallStandingBlockItem(ModBlocks.PURPLE_FIRE_TORCH,ModBlocks.PURPLE_FIRE_WALL_TORCH,new Item.Settings().group(ItemGroup.DECORATIONS));
 
-    @Register("darkness_wizard_spawn_egg")
-    public static final SpawnEggItem DARKNESS_WIZARD_SPAWN_EGG = new SpawnEggItem(CommonMod.DARKNESS_WIZARD,0xffee18fe, 0xff11f521, new Item.Settings().group(ItemGroup.MISC));
 
     public static class Tags {
 

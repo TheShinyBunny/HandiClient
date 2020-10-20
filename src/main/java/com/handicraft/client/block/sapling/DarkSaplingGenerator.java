@@ -24,9 +24,6 @@ public class DarkSaplingGenerator extends SaplingGenerator {
     @Override
     protected @Nullable ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
         MutableRegistry<ConfiguredFeature<?, ?>> registry = CommonMod.SERVER.get().getRegistryManager().get(Registry.CONFIGURED_FEATURE_WORLDGEN);
-        for(Map.Entry<RegistryKey<ConfiguredFeature<?, ?>>, ConfiguredFeature<?, ?>> f : registry.getEntries()) {
-            System.out.println(f.getKey().getValue());
-        }
         ConfiguredFeature<TreeFeatureConfig,?> feature = (ConfiguredFeature<TreeFeatureConfig, ?>) registry.get(new Identifier("handicraft:dark_tree"));
         if (feature == null) {
             System.out.println("no feature");

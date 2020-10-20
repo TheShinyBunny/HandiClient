@@ -56,7 +56,10 @@
       "freeze_top_layer"
     ]
   ],
-  "starts": [],
+  "starts": [
+    "handicraft:dark_temple",
+    "handicraft:dark_fortress"
+  ],
   "spawners": {
     "monster": [
       {
