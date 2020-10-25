@@ -73,7 +73,7 @@ public class NewGameMenuScreen extends Screen {
                 RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
                 realmsBridgeScreen.switchToRealms(new TitleScreen());
             } else {
-                this.client.openScreen(new NewTitleScreen(true));
+                this.client.openScreen(new NewTitleScreen(true,true));
             }
         },false,0xaacccccc,0,0xffffffff,0,0xffff11ff,0xcccccccc,20));
     }
