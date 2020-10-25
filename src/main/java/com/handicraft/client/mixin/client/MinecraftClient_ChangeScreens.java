@@ -29,13 +29,13 @@ public class MinecraftClient_ChangeScreens {
     private Screen modifyTitleScreen(Screen screen) {
         if (ClientMod.VANILLA_GUI) return screen;
         if (screen instanceof TitleScreen) {
-            return new NewTitleScreen(((TitleScreenAccessor)screen).isDoBackgroundFade());
+            return new NewTitleScreen(((TitleScreenAccessor)screen).isDoBackgroundFade(),true);
         }
         if (screen instanceof AdvancementsScreen) {
             return new ChallengesScreen(false);
         }
         if (screen instanceof MultiplayerScreen) {
-            return new NewTitleScreen(true);
+            return new NewTitleScreen(true,true);
         }
         if (screen instanceof GameMenuScreen) {
             return new NewGameMenuScreen();

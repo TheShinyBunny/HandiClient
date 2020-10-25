@@ -36,13 +36,15 @@ public class NewTitleScreen extends LobbyScreen<NewTitleScreen> {
     private ButtonWidget join;
     private ButtonWidget singleplayer;
 
-    public NewTitleScreen(boolean fadeIn) {
+    public NewTitleScreen(boolean fadeIn, boolean ping) {
         super(true);
         if (fadeIn) {
             transition.scheduleStart(1000);
         }
         this.player = FakePlayer.create();
-        ClientMod.pingServer();
+        if (ping) {
+            ClientMod.pingServer();
+        }
     }
 
     @Override

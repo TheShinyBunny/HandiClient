@@ -190,7 +190,6 @@ public class CommonMod implements ModInitializer {
         registerAll(ModBlocks.class,Block.class,Registry.BLOCK,this::registerBlockItem,null);
         registerAll(ModPotions.class,Potion.class,Registry.POTION);
 
-        //registerAll(ModFluids.class, Fluid.class,Registry.FLUID);
         ModFluids.register();
 
         ColoredWaterBlock.registerAll();

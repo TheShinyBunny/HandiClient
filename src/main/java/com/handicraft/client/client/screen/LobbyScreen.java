@@ -29,7 +29,7 @@ public abstract class LobbyScreen<S extends LobbyScreen<S>> extends Screen imple
     protected ScreenTransition transition = new ScreenTransition();
 
     private static List<TabButton> tabButtons = Util.make(new ArrayList<>(), l->{
-        l.add(new TabButton("gui.title.lobby",new NewTitleScreen(false)));
+        l.add(new TabButton("gui.title.lobby",new NewTitleScreen(false,false)));
         l.add(new TabButton("gui.title.handipass", new HandiPassScreen(true)));
         l.add(new TabButton("gui.title.locker",new LockerScreen(true)));
         l.add(new TabButton("gui.title.challenges", new ChallengesScreen(true)));
