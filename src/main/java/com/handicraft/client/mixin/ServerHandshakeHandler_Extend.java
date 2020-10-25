@@ -32,7 +32,7 @@ public class ServerHandshakeHandler_Extend {
             int ver = ((HandiVersionHolder) packet).getHandiVersion();
             Text text;
             if (ver == -1) {
-                text = new LiteralText("You are not whitelisted on the server!");
+                text = new LiteralText("You are not using the HandiCraft Client!");
                 connection.send(new LoginDisconnectS2CPacket(text));
                 connection.disconnect(text);
                 ci.cancel();

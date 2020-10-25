@@ -4,6 +4,8 @@
 
 package com.handicraft.client.mixin;
 
+import com.handicraft.client.collectibles.PlayerCollectibles;
+import com.handicraft.client.util.ExtendedQueryRequest;
 import com.handicraft.client.util.ExtendedServerMetadata;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
@@ -21,23 +23,23 @@ import java.util.UUID;
 @Mixin(ServerQueryNetworkHandler.class)
 public class ServerQueryHandler_HandleExtension {
 
-    @Shadow private boolean responseSent;
     @Shadow @Final private ClientConnection connection;
-    @Shadow @Final private static Text REQUEST_HANDLED;
     @Shadow @Final private MinecraftServer server;
 
     @Overwrite
     public void onRequest(QueryRequestC2SPacket packet) {
-        if (this.responseSent) {
-            this.connection.disconnect(REQUEST_HANDLED);
+        if (!(packet instanceof ExtendedQueryRequest)) {
+            System.out.println("VANILLA PING PACKET RECEIVED");
         } else {
-            this.responseSent = true;
-            if (!(packet instanceof UUIDHolder)) {
-                System.out.println("NO UUID IN PACKET HUH");
-            } else {
-                UUID id = ((UUIDHolder) packet).getUUID();
-                this.connection.send(new QueryResponseS2CPacket(new ExtendedServerMetadata(id,this.server.getServerMetadata())));
+            ExtendedQueryRequest req = (ExtendedQueryRequest)packet;
+            UUID id = req.getUUID();
+            if (req.getNewClaim() != null) {
+                PlayerCollectibles.claimOffline(id, req.getNewClaim());
             }
+            if (req.getNewSelectedType() != null) {
+                PlayerCollectibles.selectOffline(id,req.getNewSelectedType(),req.getNewSelected());
+            }
+            this.connection.send(new QueryResponseS2CPacket(new ExtendedServerMetadata(id,this.server.getServerMetadata())));
         }
 
     }

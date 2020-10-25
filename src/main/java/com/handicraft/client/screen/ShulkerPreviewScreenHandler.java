@@ -128,9 +128,9 @@ public class ShulkerPreviewScreenHandler extends ScreenHandler {
                                 return prev;
                             }
                         });
-                    } else if (prev instanceof EnderChestScreenHandler) {
+                    } /*else if (prev instanceof EnderChestScreenHandler) {
                         player.openHandledScreen(EnderChestScreenHandler.create());
-                    }
+                    }*/
                 } else {
                     player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> {
                         Set<Inventory> invs = new HashSet<>();

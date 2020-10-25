@@ -22,6 +22,16 @@ public class HeatWalkerEnchantment extends Enchantment {
     }
 
     @Override
+    public boolean isAvailableForEnchantedBookOffer() {
+        return false;
+    }
+
+    @Override
+    public boolean isAvailableForRandomSelection() {
+        return false;
+    }
+
+    @Override
     public int getMinPower(int level) {
         return level * 8;
     }

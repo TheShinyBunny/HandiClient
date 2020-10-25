@@ -5,6 +5,7 @@
 package com.handicraft.client.gen.structure;
 
 import com.google.common.collect.ImmutableList;
+import com.handicraft.client.CommonMod;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -23,10 +24,9 @@ public class DarkFortressStructure extends StructureFeature<DefaultFeatureConfig
     private static final List<SpawnSettings.SpawnEntry> SPAWN_LIST = ImmutableList.of(
             new SpawnSettings.SpawnEntry(EntityType.WITHER_SKELETON,100,2,4),
             new SpawnSettings.SpawnEntry(EntityType.RAVAGER,50,1,1),
-            new SpawnSettings.SpawnEntry(EntityType.PHANTOM,130,2,5),
-            new SpawnSettings.SpawnEntry(EntityType.VEX,90,2,4),
-            new SpawnSettings.SpawnEntry(EntityType.HUSK,60,1,5),
-            new SpawnSettings.SpawnEntry(EntityType.SPIDER,40,2,3)
+            new SpawnSettings.SpawnEntry(CommonMod.DARK_BLAZE,90,2,5),
+            new SpawnSettings.SpawnEntry(EntityType.SPIDER,40,2,3),
+            new SpawnSettings.SpawnEntry(CommonMod.DARK_PILLAGER,100,2,3)
     );
 
     public DarkFortressStructure() {
@@ -63,7 +63,7 @@ public class DarkFortressStructure extends StructureFeature<DefaultFeatureConfig
             }
 
             this.setBoundingBoxFromChildren();
-            this.method_14976(this.random, 48, 70);
+            this.method_14976(this.random, 90, 110);
         }
     }
 }

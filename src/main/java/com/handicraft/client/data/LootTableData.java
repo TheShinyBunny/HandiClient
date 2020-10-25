@@ -9,7 +9,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
+import com.handicraft.client.gen.structure.DarkFortressGenerator;
 import com.handicraft.client.item.ModItems;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.*;
@@ -18,7 +20,9 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.server.LootTablesProvider;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -28,8 +32,10 @@ import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.ApplyBonusLootFunction;
-import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.function.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
@@ -63,7 +69,7 @@ public class LootTableData extends LootTablesProvider {
     public LootTableData(DataGenerator dataGenerator) {
         super(dataGenerator);
         this.root = dataGenerator;
-        lootTypeGenerators = ImmutableList.of(lootGenerator(LootTableData::blocks,Block::getLootTableId,LootContextTypes.BLOCK));
+        lootTypeGenerators = ImmutableList.of(lootGenerator(LootTableData::blocks,Block::getLootTableId,LootContextTypes.BLOCK),lootGenerator(LootTableData::entities, EntityType::getLootTableId,LootContextTypes.ENTITY),Pair.of(cons->LootTableData.chests(cons),LootContextTypes.CHEST));
     }
 
     private <T> Pair<Consumer<BiConsumer<Identifier,LootTable.Builder>>,LootContextType> lootGenerator(Consumer<BiConsumer<T,LootTable.Builder>> consumer, Function<T,Identifier> lootTableId, LootContextType ctx) {
@@ -110,7 +116,7 @@ public class LootTableData extends LootTablesProvider {
         return rootOutput.resolve("data/" + lootTableId.getNamespace() + "/loot_tables/" + lootTableId.getPath() + ".json");
     }
 
-    public static void blocks(BiConsumer<Block, LootTable.Builder> consumer) {
+    private static void blocks(BiConsumer<Block, LootTable.Builder> consumer) {
         dropSelf(consumer, PEONY);
         consumer.accept(Blocks.PEONY,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(Blocks.PEONY).conditionally(BlockStatePropertyLootCondition.builder(Blocks.PEONY).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))))));
         consumer.accept(POTTED_PEONY,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(Blocks.FLOWER_POT))).pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(PEONY))));
@@ -142,10 +148,11 @@ public class LootTableData extends LootTablesProvider {
         dropSelf(consumer, PURPLE_FIRE_LANTERN);
         dropSelf(consumer, DARK_OBSIDIAN);
         dropSelf(consumer, DARKNESS_BRICKS);
+        dropSelf(consumer, JACK_SOUL_LANTERN);
 
         consumer.accept(HALLOWEEN_CAKE,LootTable.builder());
-        dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1);
-        dropOre(consumer, DARKNESS_DIAMOND_ORE, Items.DIAMOND, 1, 1);
+        dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1, false);
+        dropOre(consumer, DARKNESS_DIAMOND_ORE, Items.DIAMOND, 1, 1, true);
         dropSelf(consumer, TOMBSTONE);
         dropWithSilkTouch(consumer, Blocks.GRASS_PATH, Blocks.DIRT);
         dropWithSilkTouch(consumer, Blocks.FARMLAND, Blocks.DIRT);
@@ -174,14 +181,52 @@ public class LootTableData extends LootTablesProvider {
         ))));
     }
 
-    private static void dropOre(BiConsumer<Block, LootTable.Builder> consumer, Block ore, Item drop, int min, int max) {
+    private static void dropOre(BiConsumer<Block, LootTable.Builder> consumer, Block ore, Item drop, int min, int max, boolean fortunable) {
+        LeafEntry.Builder<?> entry = ItemEntry.builder(drop).apply(SetCountLootFunction.builder(UniformLootTableRange.between(min, max)));
+        if (fortunable) {
+            entry = entry.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE));
+        }
         consumer.accept(ore,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(AlternativeEntry.builder(
                 ItemEntry.builder(ore).conditionally(REQUIRE_SILK_TOUCH),
-                ItemEntry.builder(drop).apply(SetCountLootFunction.builder(UniformLootTableRange.between(min, max))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+                entry
         ))));
     }
 
     private static void dropSelf(BiConsumer<Block, LootTable.Builder> consumer, Block block) {
         consumer.accept(block,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(block)).conditionally(SurvivesExplosionLootCondition.builder())));
+    }
+
+    private static void entities(BiConsumer<EntityType<?>, LootTable.Builder> consumer) {
+        consumer.accept(CommonMod.DARK_BLAZE,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(Items.TOTEM_OF_UNDYING).conditionally(RandomChanceLootCondition.builder(0.05f)))));
+        consumer.accept(CommonMod.DARK_PILLAGER,LootTable.builder().pool(LootPool.builder().rolls(ONE_ROLL).with(ItemEntry.builder(Items.NAME_TAG).conditionally(RandomChanceWithLootingLootCondition.builder(0.5f,0.1f)))));
+    }
+
+    private static void chests(BiConsumer<Identifier, LootTable.Builder> consumer) {
+        consumer.accept(DarkFortressGenerator.DARK_FORTRESS_CHEST_LOOT,LootTable.builder().pool(LootPool.builder().rolls(UniformLootTableRange.between(3,8))
+                .with(ItemEntry.builder(Items.NETHERITE_CHESTPLATE).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.NETHERITE_LEGGINGS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.NETHERITE_BOOTS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.NETHERITE_HELMET).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.DIAMOND_CHESTPLATE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.DIAMOND_LEGGINGS).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.NETHERITE_SWORD).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.NETHERITE_PICKAXE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+                .with(ItemEntry.builder(Items.TOTEM_OF_UNDYING).weight(10))
+                .with(ItemEntry.builder(ModItems.RUBY).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1,4))))
+                .with(ItemEntry.builder(Items.ENCHANTED_BOOK).weight(10).apply(SetNbtLootFunction.builder(createMendingEnchantTag())))
+                .with(ItemEntry.builder(Items.BEACON).weight(1).conditionally(RandomChanceLootCondition.builder(0.005f)))
+                .with(ItemEntry.builder(DARKNESS_BRICKS).weight(9).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(64))))
+        ));
+    }
+
+    private static CompoundTag createMendingEnchantTag() {
+        CompoundTag tag = new CompoundTag();
+        ListTag enchs = new ListTag();
+        CompoundTag mending = new CompoundTag();
+        mending.putString("id","minecraft:mending");
+        mending.putShort("lvl", (short) 1);
+        enchs.add(mending);
+        tag.put("StoredEnchantments",enchs);
+        return tag;
     }
 }

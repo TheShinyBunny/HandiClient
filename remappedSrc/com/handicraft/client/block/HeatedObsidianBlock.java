@@ -7,6 +7,7 @@ package com.handicraft.client.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -26,7 +27,7 @@ public class HeatedObsidianBlock extends Block {
     public static final IntProperty AGE = Properties.AGE_3;
 
     public HeatedObsidianBlock() {
-        super(FabricBlockSettings.of(Material.STONE, MaterialColor.BLACK).ticksRandomly().strength(5.0f,1200f).nonOpaque());
+        super(FabricBlockSettings.of(Material.STONE, MaterialColor.BLACK).ticksRandomly().strength(5.0f,1200f).breakByTool(FabricToolTags.PICKAXES,3));
         setDefaultState(getStateManager().getDefaultState().with(AGE,0));
     }
 
@@ -35,7 +36,7 @@ public class HeatedObsidianBlock extends Block {
     }
 
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if ((random.nextInt(3) == 0 || this.canHeat(world, pos, 4)) && world.getLightLevel(pos) > 11 - state.get(AGE) - state.getOpacity(world, pos) && this.increaseAge(state, world, pos)) {
+        if ((random.nextInt(3) == 0 || this.canHeat(world, pos, 4)) && this.increaseAge(state, world, pos)) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
 
             for (Direction dir : Direction.values()) {
@@ -63,7 +64,7 @@ public class HeatedObsidianBlock extends Block {
     }
 
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        if (block == this && this.canHeat(world, pos, 2)) {
+        if (block == this && this.canHeat(world, pos, 1)) {
             this.heat(state, world, pos);
         }
         super.neighborUpdate(state, world, pos, block, fromPos, notify);

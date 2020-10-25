@@ -12,12 +12,12 @@
         "structures": {
           "handicraft:dark_fortress": {
             "spacing": 20,
-            "separation": 5,
+            "separation": 15,
             "salt": 3873535
           },
           "handicraft:dark_temple": {
-            "spacing": 8,
-            "separation": 3,
+            "spacing": 30,
+            "separation": 10,
             "salt": 3873535
           }
         }

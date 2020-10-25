@@ -14,13 +14,17 @@ import net.minecraft.particle.DefaultParticleType;
 import org.jetbrains.annotations.Nullable;
 
 public class RubyContrail extends AnimatedParticle {
+
+    private int rotDir;
+
     public RubyContrail(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z, spriteProvider, -5.0E-4F);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
         this.scale *= 0.75F;
-        this.maxAge = 60 + this.random.nextInt(12);
+        this.maxAge = 60 + this.random.nextInt(8);
+        this.rotDir = this.random.nextInt(3) - 1;
         this.setTargetColor(15916745);
         this.setSpriteForAge(spriteProvider);
     }
@@ -34,7 +38,7 @@ public class RubyContrail extends AnimatedParticle {
     @Override
     public void tick() {
         this.prevAngle = this.angle;
-        this.angle += Math.PI * 0.03 * Math.random();
+        this.angle += Math.PI * 0.03 * rotDir;
         super.tick();
     }
 
@@ -55,7 +59,11 @@ public class RubyContrail extends AnimatedParticle {
 
         @Override
         public @Nullable Particle createParticle(DefaultParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new RubyContrail(world,x,y,z,velocityX,velocityY,velocityZ,provider);
+            try {
+                return new RubyContrail(world, x, y, z, velocityX, velocityY, velocityZ, provider);
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

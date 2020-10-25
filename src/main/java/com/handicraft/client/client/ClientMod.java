@@ -9,6 +9,8 @@ import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
 import com.handicraft.client.client.entity.DarkBlazeRenderer;
+import com.handicraft.client.client.entity.DarkPillagerRenderer;
+import com.handicraft.client.client.entity.DarknessWizardRenderer;
 import com.handicraft.client.client.screen.*;
 import com.handicraft.client.collectibles.ClientCollectibleCache;
 import com.handicraft.client.collectibles.Emote;
@@ -119,8 +121,9 @@ public class ClientMod implements ClientModInitializer {
         ScreenRegistry.register(CommonMod.SHULKER_PREVIEW_SCREEN_HANDLER_TYPE, ShulkerPreviewScreen::new);
         ScreenRegistry.register(CommonMod.CANDY_BUCKET_HANDLER_TYPE, CandyBucketScreen::new);
 
-        EntityRendererRegistry.INSTANCE.register(CommonMod.DARKNESS_WIZARD, ((dispatcher,ctx)->new IllusionerEntityRenderer(dispatcher)));
+        EntityRendererRegistry.INSTANCE.register(CommonMod.DARKNESS_WIZARD, ((dispatcher,ctx)->new DarknessWizardRenderer(dispatcher)));
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARK_BLAZE, (dispatcher,ctx)->new DarkBlazeRenderer(dispatcher));
+        EntityRendererRegistry.INSTANCE.register(CommonMod.DARK_PILLAGER, (dispatcher,ctx)->new DarkPillagerRenderer(dispatcher));
 
         ClientSidePacketRegistry.INSTANCE.register(CommonMod.RESPONSE_CAPE_TEXTURE,(ctx, buf) -> {
             UUID id = buf.readUuid();

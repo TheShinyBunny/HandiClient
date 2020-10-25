@@ -8,24 +8,22 @@ import com.handicraft.client.CommonMod;
 import com.handicraft.client.challenge.client.ChallengesScreen;
 import com.handicraft.client.client.ClientMod;
 import com.handicraft.client.client.widget.PlainColorButton;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.StatsScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Identifier;
 
 public class NewGameMenuScreen extends Screen {
 
+    private static final Identifier HANDICRACK_LOGO = new Identifier("hcclient:textures/gui/handicrack.png");
     private int animationTime;
     private int dir;
 
@@ -105,6 +103,9 @@ public class NewGameMenuScreen extends Screen {
 
         textRenderer.draw(matrices,t,0,0,-1);
         matrices.pop();
+
+        client.getTextureManager().bindTexture(HANDICRACK_LOGO);
+        drawTexture(matrices,width - offset + 10,225,100,30,0,0,1357,451,1357,451);
 
         super.render(matrices, mouseX, mouseY, delta);
     }

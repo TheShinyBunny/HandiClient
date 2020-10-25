@@ -14,4 +14,7 @@ public class ParticleTrail extends Collectible {
         this.effect = effect;
     }
 
+    public ParticleEffect getEffect() {
+        return effect;
+    }
 }

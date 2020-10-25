@@ -5,6 +5,8 @@
 package com.handicraft.client.mixin;
 
 import com.handicraft.client.CommonMod;
+import com.handicraft.client.datafix.EnchantmentFixes;
+import com.handicraft.client.datafix.RubyFix;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.item.ItemStack;
@@ -22,10 +24,8 @@ public class ItemStack_DataFix {
     @Inject(method = "fromTag",at = @At("HEAD"))
     private static void fixItem(CompoundTag tag, CallbackInfoReturnable<ItemStack> cir) {
         try {
-            Dynamic<Tag> res = CommonMod.DATA_FIXER.update(TypeReferences.ITEM_STACK, new Dynamic<>(NbtOps.INSTANCE, tag), 0, CommonMod.DATA_VERSION);
-            if (res.getValue() instanceof CompoundTag) {
-                CommonMod.updateNBT(tag, (CompoundTag) res.getValue());
-            }
+            EnchantmentFixes.fix(tag);
+            //RubyFix.fix(tag);
         } catch (Throwable t) {
             t.printStackTrace();
         }

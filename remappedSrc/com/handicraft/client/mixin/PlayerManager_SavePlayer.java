@@ -18,8 +18,7 @@ public class PlayerManager_SavePlayer {
 
     @Inject(method = "savePlayerData",at = @At("TAIL"))
     private void save(ServerPlayerEntity player, CallbackInfo ci) {
-        PlayerChallenges challenges = PlayerPersistentData.of(player).challenges;
-        challenges.saveToFile(player.server);
+        PlayerPersistentData.of(player).saveExtraData();
     }
 
 }

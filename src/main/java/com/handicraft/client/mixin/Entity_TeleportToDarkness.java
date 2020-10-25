@@ -35,12 +35,14 @@ public abstract class Entity_TeleportToDarkness {
         if (world.getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == CommonMod.DARKNESS_KEY) {
             destination.getChunk(BlockPos.ORIGIN);
             BlockPos pos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,BlockPos.ORIGIN);
-            System.out.println("top pos: " + pos);
             Vec3d vec = new Vec3d(pos.getX() + 0.5,pos.getY(),pos.getZ() + 0.5);
             cir.setReturnValue(new TeleportTarget(vec,getVelocity(),yaw,pitch));
-        } else {
-            
+        } else if (world.getRegistryKey() == CommonMod.DARKNESS_KEY && destination.getRegistryKey() == World.OVERWORLD) {
+            BlockPos pos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
+            cir.setReturnValue(new TeleportTarget(Vec3d.ofBottomCenter(pos),getVelocity(),yaw,pitch));
         }
     }
+
+
 
 }

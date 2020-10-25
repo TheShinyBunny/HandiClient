@@ -87,7 +87,14 @@ public class FakePlayer extends ClientPlayerEntity {
 
     @Override
     protected @Nullable PlayerListEntry getPlayerListEntry() {
-        return null;
+        if (MinecraftClient.getInstance().world == null) return null;
+        return super.getPlayerListEntry();
+    }
+
+    @Override
+    public Identifier getSkinTexture() {
+        loadTextures();
+        return textures.getOrDefault(MinecraftProfileTexture.Type.SKIN,DefaultSkinHelper.getTexture(uuid));
     }
 
     @Override
@@ -116,15 +123,19 @@ public class FakePlayer extends ClientPlayerEntity {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
 
         Camera cam = MinecraftClient.getInstance().gameRenderer.getCamera();
-        cam.update(world,this,true,false,1);
-        client.getEntityRenderDispatcher().configure(world,cam,this);
-        client.player = this;
+        cam.update(world, this, true, false, 1);
+        client.getEntityRenderDispatcher().configure(world, cam, this);
+        if (MinecraftClient.getInstance().world == null) {
+            client.player = this;
+        }
 
         RenderSystem.runAsFancy(()-> {
             client.getEntityRenderDispatcher().render(this, 0, 0, 0, 0, 1, matrixStack, immediate, 15728880);
         });
-        client.getEntityRenderDispatcher().setWorld(null);
-        client.player = null;
+        if (MinecraftClient.getInstance().world == null) {
+            client.getEntityRenderDispatcher().setWorld(null);
+            client.player = null;
+        }
         immediate.draw();
         RenderSystem.popMatrix();
     }

@@ -8,7 +8,6 @@ import com.handicraft.client.ModTags;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.fluid.ModFluids;
 import com.handicraft.client.item.ModItems;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;

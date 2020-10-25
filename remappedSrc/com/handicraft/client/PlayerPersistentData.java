@@ -30,15 +30,13 @@ public class PlayerPersistentData implements PersistentData {
     private PlayerEntity player;
 
     public int storedXP;
-    private boolean capeLoaded;
-    public Identifier cape;
     public PlayerChallenges challenges;
     public PlayerCollectibles collectibles;
 
     private PlayerPersistentData(PlayerEntity player) {
         this.player = player;
         this.challenges = new PlayerChallenges((ServerPlayerEntity) player);
-        this.collectibles = new PlayerCollectibles();
+        this.collectibles = PlayerCollectibles.load(player.getServer(),player.getUuid());
     }
 
     public static PlayerPersistentData of(PlayerEntity player) {
@@ -47,45 +45,25 @@ public class PlayerPersistentData implements PersistentData {
 
     @Override
     public void read(CompoundTag tag) {
-        try {
-            Dynamic<?> res = CommonMod.DATA_FIXER.update(TypeReferences.PLAYER, new Dynamic<>(NbtOps.INSTANCE, tag), 0, CommonMod.DATA_VERSION);
-            CommonMod.updateNBT(tag, (CompoundTag) res.getValue());
-        } catch (Throwable t) {
-            t.printStackTrace();
+        if (tag.contains("BukkitValues")) {
+            storedXP = tag.getCompound("BukkitValues").getInt("handicraft:enderchest/stored_xp");
+        } else {
+            storedXP = tag.getInt("storedXP");
         }
-        if (tag.contains("cape")) {
-            cape = Identifier.CODEC.decode(NbtOps.INSTANCE,tag.get("cape")).result().map(Pair::getFirst).orElse(null);
-        }
-        cape = new Identifier("hcclient:textures/capes/ruby.png");
-        storedXP = tag.getInt("storedXP");
-
-        //challenges.read(tag.getList("challenges", NbtType.COMPOUND));
     }
 
     @Override
     public void write(CompoundTag tag) {
-        if (cape != null) {
-            tag.putString("cape", cape.toString());
-        }
         tag.putInt("storedXP",storedXP);
-        /*ListTag list = new ListTag();
-        challenges.write(list);
-        tag.put("challenges",list);*/
-    }
-
-    public Identifier getCape() {
-        if (!capeLoaded && player.world.isClient) {
-            ClientMod.requestCape(player.getUuid());
-        }
-        return cape;
-    }
-
-    public void setCape(Identifier cape) {
-        this.cape = cape;
-        this.capeLoaded = true;
     }
 
     public void onSpawn() {
         challenges.init();
+        collectibles.sendUpdate(player);
+    }
+
+    public void saveExtraData() {
+        challenges.saveToFile(player.getServer());
+        collectibles.save(player.getServer(),player.getUuid());
     }
 }

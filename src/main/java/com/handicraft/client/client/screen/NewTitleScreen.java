@@ -10,6 +10,7 @@ import com.handicraft.client.client.widget.InvisibleButtonWidget;
 import com.handicraft.client.client.widget.RewardWidget;
 import com.handicraft.client.collectibles.ClientCollectibleCache;
 import com.handicraft.client.rewards.Reward;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -19,6 +20,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 
 
 public class NewTitleScreen extends LobbyScreen<NewTitleScreen> {
@@ -27,6 +30,7 @@ public class NewTitleScreen extends LobbyScreen<NewTitleScreen> {
     public static NewTitleScreen CURRENT;
     private static final Identifier JOIN_TEXTURE = new Identifier("hcclient:textures/gui/title/background_join.png");
     private static final Identifier SINGLEPLAYER_TEXTURE = new Identifier("hcclient:textures/gui/title/background_singleplayer.png");
+    private static final Identifier HANDICRACK_LOGO = new Identifier("hcclient:textures/gui/handicrack.png");
 
     private FakePlayer player;
     private ButtonWidget join;
@@ -102,6 +106,9 @@ public class NewTitleScreen extends LobbyScreen<NewTitleScreen> {
         if (!ClientMod.handicraftOnline.get()) {
             drawCenteredText(matrices, textRenderer, new LiteralText("HandiCraft is currently Offline.").formatted(Formatting.RED), width / 2, height - 50, 0xffffffff);
         }
+
+        client.getTextureManager().bindTexture(HANDICRACK_LOGO);
+        drawTexture(matrices,(int)(width - 376 * swidth),(int)(height - 270 * sheight),(int)(366 * swidth),(int)(82 * sheight),0,0,1357,451,1357,451);
 
         super.render(matrices, mouseX, mouseY, delta);
     }

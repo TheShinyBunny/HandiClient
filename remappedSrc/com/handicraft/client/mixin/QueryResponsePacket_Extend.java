@@ -9,7 +9,10 @@ import com.handicraft.client.PlayerPersistentData;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallenge;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
+import com.handicraft.client.collectibles.PlayerCollectibles;
+import com.handicraft.client.rewards.Reward;
 import com.handicraft.client.util.ExtendedServerMetadata;
+import com.handicraft.client.util.HandiUtils;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -40,22 +43,15 @@ public class QueryResponsePacket_Extend {
                 buf.writeBoolean(true);
                 buf.writeVarInt(challenges.size());
                 for (ChallengeInstance c : challenges) {
-                    c.writePacket(buf);
+                    c.writeFullPacket(buf);
                 }
             }
+            PlayerCollectibles collectibles = PlayerCollectibles.load(server,((ExtendedServerMetadata) metadata).getPlayer());
+            collectibles.writePacket(buf);
+
         }
     }
 
-    @Inject(method = "read",at = @At("TAIL"))
-    private void read(PacketByteBuf buf, CallbackInfo ci) {
-        if (buf.readBoolean()) {
-            int size = buf.readVarInt();
-            List<ChallengeInstance> challenges = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                challenges.add(ChallengeInstance.readFullPacket(buf));
-            }
-            ClientChallengesManager.setChallenges(challenges, true);
-        }
-    }
+
 
 }

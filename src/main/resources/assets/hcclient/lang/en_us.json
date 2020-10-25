@@ -23,14 +23,14 @@
   "block.minecraft.melon": "Watermelon",
   "block.minecraft.peony_bush": "Peony Bush",
   "block.minecraft.peony": "Peony",
-  "block.minecraft.ruby_block": "Ruby Block",
+  "block.minecraft.ruby_block": "Block of Ruby",
   "block.minecraft.dark_stone": "Dark Stone",
   "block.minecraft.halloween_cake": "Halloween Cake",
   "block.minecraft.tombstone": "Tombstone",
   "block.minecraft.dark_ore": "Dark Ore",
   "block.minecraft.dark_leaves": "Dark Leaves",
   "block.minecraft.shadow_stone": "Shadow Stone",
-  "block.minecraft.dark_ruby_block": "Dark Ruby Block",
+  "block.minecraft.dark_ruby_block": "Block of Dark Ruby",
   "block.minecraft.darkness_diamond_ore": "Darkness Diamond Ore",
   "block.minecraft.dark_rose": "Dark Rose",
   "block.minecraft.dark_magma_block": "Dark Magma Block",
@@ -52,6 +52,7 @@
   "block.minecraft.purple_fire_torch": "Purple Darkness Torch",
   "block.minecraft.dark_obsidian": "Dark Obsidian",
   "block.minecraft.darkness_bricks": "Darkness Bricks",
+  "block.minecraft.jack_soul_lantern": "Jack Soul Lantern",
 
   "item.minecraft.candy.0": "Blue Toffee",
   "item.minecraft.candy.1": "Bubble Gum",
@@ -78,6 +79,8 @@
   "item.minecraft.darkness_star": "Darkness Star",
   "item.minecraft.ruby_nugget": "Ruby Nugget",
   "item.minecraft.darkness_wizard_spawn_egg": "Darkness Wizard Spawn Egg",
+  "item.minecraft.darkness_axe": "Darkness Axe",
+  "item.exclusive.handicrack": "§dHandiCrack 2020 Exclusive",
 
   "entity.minecraft.darkness_wizard": "Darkness Wizard",
 

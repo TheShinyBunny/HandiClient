@@ -4,13 +4,10 @@
 
 package com.handicraft.client.collectibles;
 
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-public class Collectible {
+public abstract class Collectible {
 
-    //public static final Registry<Collectible> REGISTRY = FabricRegistryBuilder.createSimple(Collectible.class,new Identifier("hcclient:collectibles")).buildAndRegister();
 
     private CollectibleType<?> type;
 
@@ -20,5 +17,9 @@ public class Collectible {
 
     public CollectibleType<?> getType() {
         return type;
+    }
+
+    public Identifier getId() {
+        return Collectibles.REGISTRY.getId(this);
     }
 }

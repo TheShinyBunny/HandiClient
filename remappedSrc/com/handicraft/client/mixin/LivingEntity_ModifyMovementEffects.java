@@ -5,6 +5,7 @@
 package com.handicraft.client.mixin;
 
 import com.handicraft.client.CommonMod;
+import com.handicraft.client.enchantments.FarmingFeetEnchantment;
 import com.handicraft.client.enchantments.HeatWalkerEnchantment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -41,10 +42,14 @@ public abstract class LivingEntity_ModifyMovementEffects extends Entity {
     }
 
     @Inject(method = "baseTick",at = @At(value = "INVOKE",target = "Lnet/minecraft/entity/LivingEntity;getBlockPos()Lnet/minecraft/util/math/BlockPos;",shift = At.Shift.BEFORE))
-    private void heatWalker(CallbackInfo ci) {
+    private void activateEnchantments(CallbackInfo ci) {
         int i = EnchantmentHelper.getEquipmentLevel(CommonMod.HEAT_WALKER,(LivingEntity)(Object)this);
         if (i > 0) {
             HeatWalkerEnchantment.heatLava((LivingEntity)(Object)this,this.world,getBlockPos(),i);
+        }
+        int j = EnchantmentHelper.getEquipmentLevel(CommonMod.FARMING_FEET,(LivingEntity)(Object)this);
+        if (j > 0) {
+            FarmingFeetEnchantment.farm((LivingEntity)(Object)this);
         }
     }
 

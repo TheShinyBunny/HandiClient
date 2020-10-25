@@ -18,17 +18,16 @@ public class ItemReward extends Reward {
     }
 
     @Override
-    public void startedHover(HandiPassScreen screen) {
+    public void onSelect(HandiPassScreen screen) {
         screen.player.setStackInHand(Hand.MAIN_HAND,stack);
     }
 
     @Override
-    public void stoppedHover(HandiPassScreen screen) {
+    public void onDeselect(HandiPassScreen screen) {
         screen.player.setStackInHand(Hand.MAIN_HAND,ItemStack.EMPTY);
     }
 
-    @Override
-    public void giveReward(PlayerEntity player) {
-        player.giveItemStack(stack.copy());
+    public ItemStack getStack() {
+        return stack.copy();
     }
 }

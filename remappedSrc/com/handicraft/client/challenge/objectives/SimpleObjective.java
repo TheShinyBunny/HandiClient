@@ -4,59 +4,46 @@
 
 package com.handicraft.client.challenge.objectives;
 
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.predicate.PlayerPredicate;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
-import java.util.Random;
+public class SimpleObjective implements ObjectiveType<SimpleObjective.Instance> {
 
-public class SimpleObjective extends ObjectiveType<SimpleObjective.Instance> {
-
-    private String textKey;
-    private ItemConvertible icon;
-
-    public SimpleObjective(String textKey, ItemConvertible icon) {
-        this.textKey = textKey;
-        this.icon = icon;
+    public Instance create(String text,ItemStack icon) {
+        return new Instance(this,text,icon);
     }
 
-    @Override
-    public Instance generate(Random random, CountModifier modifier) {
-        return new Instance(PlayerPredicate.ANY,textKey,icon);
+    public void trigger(PlayerEntity player, int count) {
+        trigger(player,i->true,count);
     }
 
-    @Override
-    public Instance fromNBT(CompoundTag tag, PlayerPredicate player) {
-        return new Instance(player,textKey,icon);
-    }
+    public static class Instance implements ObjectiveInstance {
 
-    public static class Instance extends ObjectiveInstance {
+        private ObjectiveType<?> type;
+        private final String text;
+        private final ItemStack icon;
 
-        private String textKey;
-        private ItemConvertible icon;
-
-        public Instance(PlayerPredicate player, String textKey, ItemConvertible icon) {
-            super(player);
-            this.textKey = textKey;
+        public Instance(ObjectiveType<?> type, String text, ItemStack icon) {
+            this.type = type;
+            this.text = text;
             this.icon = icon;
         }
 
         @Override
         public Text getText(int count) {
-            return new TranslatableText(textKey,count);
+            return new LiteralText(text);
         }
 
         @Override
-        public ItemConvertible[] getIcons() {
-            if (icon == null) return new ItemConvertible[0];
-            return new ItemConvertible[]{icon};
+        public ItemStack getIcon() {
+            return icon;
         }
 
         @Override
-        public void toNBT(CompoundTag tag) {
-
+        public ObjectiveType<?> getType() {
+            return type;
         }
     }
 }

@@ -14,9 +14,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL14C;
 
 public class ImageButton extends ButtonWidget {
     protected final int u;
@@ -29,7 +26,7 @@ public class ImageButton extends ButtonWidget {
     protected final int textureHeight;
     private Text tooltip;
 
-    public ImageButton(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int regionWidth, int regionHeight, int textureWidth, int textureHeight, ButtonWidget.PressAction action) {
+    public ImageButton(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int regionWidth, int regionHeight, int textureWidth, int textureHeight, PressAction action) {
         this(x,y,width,height,u,v,hoveredVOffset,texture,regionWidth,regionHeight,textureWidth,textureHeight,action,null);
     }
 

@@ -22,7 +22,9 @@ public abstract class ItemStack_OnCraft {
 
     @Inject(method = "onCraft",at = @At("HEAD"))
     private void onCraft(World world, PlayerEntity player, int amount, CallbackInfo ci) {
-        Objectives.CRAFT_ITEM.trigger(player,new ItemStack(getItem(),amount));
+        if (!player.world.isClient) {
+            Objectives.CRAFT_ITEM.trigger(player, new ItemStack(getItem(), amount));
+        }
     }
 
 }

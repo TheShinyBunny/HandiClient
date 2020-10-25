@@ -17,11 +17,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +43,7 @@ public class ModBlocks {
     public static final Map<DyeColor,ColoredWaterBlock> COLORED_WATER_BLOCK_MAP = new HashMap<>();
 
     @Register("ruby_block")
-    @BlockItem(value = CreativeTab.BLOCKS,rarity = Rarity.UNCOMMON)
+    @BlockItem(value = CreativeTab.BLOCKS)
     public static final Block RUBY_BLOCK = new Block(FabricBlockSettings.copyOf(Blocks.GOLD_BLOCK).breakByTool(FabricToolTags.PICKAXES,2));
 
     @Register("halloween_cake")
@@ -73,7 +71,7 @@ public class ModBlocks {
     public static final Block SHADOW_STONE = new Block(FabricBlockSettings.of(Material.STONE,MaterialColor.CLAY).breakByTool(FabricToolTags.PICKAXES).strength(1.5f,6f));
 
     @Register("dark_ruby_block")
-    @BlockItem(value = CreativeTab.BLOCKS,rarity = Rarity.EPIC)
+    @BlockItem(value = CreativeTab.BLOCKS)
     public static final Block DARK_RUBY_BLOCK = new Block(FabricBlockSettings.copyOf(Blocks.GOLD_BLOCK).breakByTool(FabricToolTags.PICKAXES,2));
 
     @Register("darkness_diamond_ore")
@@ -91,7 +89,7 @@ public class ModBlocks {
 
     @Register("dark_magma_block")
     @BlockItem(CreativeTab.BLOCKS)
-    public static final Block DARK_MAGMA_BLOCK = new MagmaBlock(FabricBlockSettings.copyOf(Blocks.MAGMA_BLOCK));
+    public static final Block DARK_MAGMA_BLOCK = new MagmaBlock(FabricBlockSettings.copyOf(Blocks.MAGMA_BLOCK).lightLevel(0));
 
     @Register("dark_log")
     @BlockItem(CreativeTab.BLOCKS)
@@ -147,10 +145,10 @@ public class ModBlocks {
     };
 
     @Register("green_dark_fire")
-    public static final DarkFireBlock GREEN_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.GREEN).noCollision().breakInstantly().luminance(s->13),Tags.GREEN_FLAMABLES);
+    public static final DarkFireBlock GREEN_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.GREEN).noCollision().breakInstantly().luminance(s->13),()->Tags.GREEN_FLAMMABLES);
 
     @Register("purple_dark_fire")
-    public static final DarkFireBlock PURPLE_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.PURPLE).noCollision().breakInstantly().luminance(s->13),Tags.PURPLE_FLAMABLES);
+    public static final DarkFireBlock PURPLE_DARK_FIRE = new DarkFireBlock(FabricBlockSettings.of(Material.FIRE,MaterialColor.PURPLE).noCollision().breakInstantly().luminance(s->13),()->Tags.PURPLE_FLAMMABLES);
 
     @Register("darkness_portal")
     public static final DarkPortalBlock DARKNESS_PORTAL = new DarkPortalBlock();
@@ -183,15 +181,19 @@ public class ModBlocks {
     @BlockItem(CreativeTab.BLOCKS)
     public static final Block DARKNESS_BRICKS = new Block(FabricBlockSettings.copyOf(Blocks.NETHER_BRICKS).requiresTool().breakByTool(FabricToolTags.PICKAXES));
 
+    @Register("jack_soul_lantern")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block JACK_SOUL_LANTERN = new JackSoulLanternBlock();
+
     public static class Tags {
 
         public static final Tag.Identified<Block> DARK_LOGS = ModTags.block("dark_logs",DARK_LOG,DARK_WOOD,STRIPPED_DARK_LOG,STRIPPED_DARK_WOOD);
 
         public static final Tag.Identified<Block> DARK_STONES = ModTags.block("dark_stones",DARK_STONE,SHADOW_STONE);
 
-        public static final Tag.Identified<Block> GREEN_FLAMABLES = ModTags.block("green_flamables",DARK_LEAVES);
+        public static final Tag.Identified<Block> GREEN_FLAMMABLES = ModTags.block("green_flammables",DARK_LEAVES,DARKNESS_BRICKS);
 
-        public static final Tag.Identified<Block> PURPLE_FLAMABLES = ModTags.block("purple_flamables",DARK_STONE,SHADOW_STONE);
+        public static final Tag.Identified<Block> PURPLE_FLAMMABLES = ModTags.block("purple_flammables",DARK_STONE,SHADOW_STONE);
     }
 
 }

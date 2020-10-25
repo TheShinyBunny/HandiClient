@@ -5,10 +5,12 @@
 package com.handicraft.client.data;
 
 import com.google.common.collect.Lists;
-import com.handicraft.client.mixin.GroupEntryAccessor;
-import net.minecraft.loot.entry.AlternativeEntry;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.entry.GroupEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class GroupEntryBuilder extends LootPoolEntry.Builder<GroupEntryBuilder> {
@@ -37,6 +39,13 @@ public class GroupEntryBuilder extends LootPoolEntry.Builder<GroupEntryBuilder> 
 
     @Override
     public LootPoolEntry build() {
-        return GroupEntryAccessor.createGroupEntry(this.children.toArray(new LootPoolEntry[0]),getConditions());
+        try {
+            Constructor<GroupEntry> constructor = GroupEntry.class.getDeclaredConstructor(LootPoolEntry[].class, LootCondition[].class);
+            constructor.setAccessible(true);
+            return constructor.newInstance(this.children.toArray(new LootPoolEntry[0]),getConditions());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

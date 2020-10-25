@@ -4,7 +4,7 @@
     "decorator": {
       "type": "count",
       "config": {
-        "count": 10
+        "count": 1
       }
     },
     "feature": {
@@ -28,7 +28,7 @@
             "feature": {
               "type": "ore",
               "config": {
-                "size": 3,
+                "size": 1,
                 "target": {
                   "predicate_type":"block_match",
                   "block": "dark_stone"

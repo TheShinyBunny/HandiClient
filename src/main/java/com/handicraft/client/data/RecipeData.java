@@ -148,8 +148,13 @@ public class RecipeData implements DataProvider {
         surrounded(consumer,GREEN_FIRE_LANTERN,ModItems.GREEN_FIRE_TORCH,IRON_NUGGET);
         surrounded(consumer,PURPLE_FIRE_LANTERN,ModItems.PURPLE_FIRE_TORCH,IRON_NUGGET);
 
-        surrounded(consumer,DARK_OBSIDIAN,DARK_RUBY,OBSIDIAN);
+        checkerboard(consumer,DARK_OBSIDIAN,OBSIDIAN,DARK_RUBY);
         bricks(consumer,DARKNESS_BRICKS,DARK_STONE);
+        ShapedRecipeJsonFactory.create(JACK_SOUL_LANTERN).pattern("P").pattern("T").input('P',CARVED_PUMPKIN).input('T',SOUL_TORCH).criterion("has_soul_torch",conditionsFromItem(SOUL_TORCH)).offerTo(consumer);
+    }
+
+    private static void checkerboard(Consumer<RecipeJsonProvider> consumer, Block output, Item cornersAndCenter, Item edges) {
+        ShapedRecipeJsonFactory.create(output).pattern("CEC").pattern("ECE").pattern("CEC").input('C',cornersAndCenter).input('E',edges).criterion("has_edges",conditionsFromItem(edges)).offerTo(consumer);
     }
 
     private static void bricks(Consumer<RecipeJsonProvider> consumer, Block output, Block ingredient) {
@@ -197,6 +202,7 @@ public class RecipeData implements DataProvider {
     private static InventoryChangedCriterion.Conditions conditionsFromTag(Tag<Item> tag) {
         return conditionsFromItemPredicates(ItemPredicate.Builder.create().tag(tag).build());
     }
+
 
     private static InventoryChangedCriterion.Conditions conditionsFromItemPredicates(ItemPredicate... itemPredicates) {
         return new InventoryChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);

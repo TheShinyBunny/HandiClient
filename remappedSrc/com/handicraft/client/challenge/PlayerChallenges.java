@@ -4,6 +4,8 @@
 
 package com.handicraft.client.challenge;
 
+import com.handicraft.client.CommonMod;
+import com.handicraft.client.PlayerPersistentData;
 import com.handicraft.client.challenge.objectives.ObjectiveInstance;
 import com.handicraft.client.challenge.objectives.ObjectiveType;
 import io.netty.buffer.Unpooled;
@@ -16,6 +18,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.io.File;
@@ -35,7 +39,10 @@ public class PlayerChallenges {
 
     public PlayerChallenges(ServerPlayerEntity player) {
         this.player = player;
-        challenges = new ArrayList<>();
+        challenges = getChallengesFor(player.getUuid(),player.server);
+        if (challenges == null) {
+            challenges = new ArrayList<>();
+        }
     }
 
     public void addChallenge(ServerChallenge<?> c) {
@@ -44,17 +51,20 @@ public class PlayerChallenges {
         }
     }
 
-    public <T extends ObjectiveInstance> void trigger(ServerChallenge<T> challenge) {
+    public <T extends ObjectiveInstance> boolean trigger(ServerChallenge<T> challenge, int times) {
         for (ChallengeInstance i : challenges) {
             if (!i.isCompleted() && i.getChallenge().equals(challenge)) {
-                i.trigger();
+                i.trigger(times);
                 if (i.isCompleted()) {
                     sendPacket(COMPLETED,i);
+                    PlayerPersistentData.of(player).collectibles.levelUp(player);
                 } else {
                     sendPacket(PROGRESS_UPDATE,i);
                 }
+                return true;
             }
         }
+        return false;
     }
 
     public ChallengeInstance get(Challenge<?> c) {
@@ -85,15 +95,16 @@ public class PlayerChallenges {
         ServerSidePacketRegistry.INSTANCE.sendToPlayer(player,UPDATE_CHALLENGES,buf);
     }
 
-    public void read(ListTag list) {
-        challenges = readFrom(list);
-    }
-
     public static List<ChallengeInstance> readFrom(ListTag tag) {
         List<ChallengeInstance> challenges = new ArrayList<>();
         for (Tag t : tag) {
             if (t instanceof CompoundTag) {
-                challenges.add(ChallengeInstance.fromNBT((CompoundTag)t,false));
+                ChallengeInstance in = ChallengeInstance.fromNBT((CompoundTag)t,i->ChallengesManager.get(CommonMod.SERVER.get().getOverworld()).get(i));
+                if (in.getChallenge() == null) {
+                    System.out.println("null challenge read from: " + t);
+                } else {
+                    challenges.add(in);
+                }
             }
         }
         return challenges;
@@ -106,9 +117,15 @@ public class PlayerChallenges {
     }
 
     public static List<ChallengeInstance> getChallengesFor(UUID uuid, MinecraftServer server) {
-        File f = new File(server.getRunDirectory(),"challenges/" + uuid + ".dat");
+        System.out.println("getting challenges: " + uuid);
+        File dir = new File(server.getRunDirectory(),"challenges");
+        File f = new File(dir,uuid + ".dat");
+        if (!f.exists()) {
+            System.out.println("file doesn't exist");
+            return null;
+        }
         try {
-            CompoundTag tag = NbtIo.read(f);
+            CompoundTag tag = NbtIo.readCompressed(f);
             return readFrom(tag.getList("challenges", NbtType.COMPOUND));
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,13 +134,22 @@ public class PlayerChallenges {
     }
 
     public void saveToFile(MinecraftServer server) {
-        File f = new File(server.getRunDirectory(),"challenges/" + player.getUuid() + ".dat");
+        File dir = new File(server.getRunDirectory(),"challenges");
+        dir.mkdirs();
+        File f = new File(dir,player.getUuidAsString() + ".dat");
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         CompoundTag tag = new CompoundTag();
         ListTag list = new ListTag();
         write(list);
         tag.put("challenges",list);
         try {
-            NbtIo.write(tag,f);
+            NbtIo.writeCompressed(tag,f);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,10 +159,18 @@ public class PlayerChallenges {
         update(ChallengesManager.get(player.server.getOverworld()).getChallenges());
     }
 
-    public void writeToClient(PacketByteBuf buf) {
-        init();
-        buf.writeVarInt(challenges.size());
+    public void print() {
+        player.sendMessage(new LiteralText("============"),false);
+        player.sendMessage(new LiteralText(" Challenges of ").append(player.getName()),false);
+        player.sendMessage(new LiteralText("============"),false);
+        for (ChallengeInstance c : challenges) {
+            player.sendMessage(c.getChallenge().getText().copy().append(": ").append(new LiteralText(c.getCompleteCount() + "/" + c.getChallenge().getMinCount()).formatted(c.isCompleted() ? Formatting.GREEN : Formatting.RED)),false);
+        }
     }
 
-
+    public void reset() {
+        challenges.forEach(c->{
+            c.setCompleteCount(0);
+        });
+    }
 }

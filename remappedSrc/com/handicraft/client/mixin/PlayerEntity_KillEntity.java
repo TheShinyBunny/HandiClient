@@ -21,7 +21,7 @@ public class PlayerEntity_KillEntity {
     @Inject(method = "updateKilledAdvancementCriterion",at = @At("HEAD"))
     private void killedEntity(Entity killer, int score, DamageSource damageSource, CallbackInfo ci) {
         if (killer != (Object)this) {
-            Objectives.KILL_ENTITY.trigger((PlayerEntity)(Object)this,killer.getType(),damageSource);
+            Objectives.KILL_ENTITY.trigger((PlayerEntity)(Object)this,killer,damageSource);
         }
     }
 

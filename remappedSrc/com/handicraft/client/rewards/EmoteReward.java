@@ -6,28 +6,22 @@ package com.handicraft.client.rewards;
 
 import com.handicraft.client.client.screen.HandiPassScreen;
 import com.handicraft.client.collectibles.Emote;
-import com.handicraft.client.collectibles.PlayerCollectibles;
-import com.handicraft.client.emotes.EmoteManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import com.handicraft.client.emotes.ClientEmoteManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-public class EmoteReward extends Reward {
+public class EmoteReward extends CollectibleReward<Emote> {
 
-    private Identifier emote;
-
-    public EmoteReward(String name, int level, int textureHeight, Identifier emote) {
-        super(name, level, textureHeight);
-        this.emote = emote;
+    public EmoteReward(String name, int level, int textureHeight, Emote emote) {
+        super(name, level, textureHeight,emote);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
-    public void clicked(HandiPassScreen screen) {
-        super.clicked(screen);
-        EmoteManager.displayEmote(screen.player,emote,100);
-    }
-
-    @Override
-    public void giveReward(PlayerEntity player) {
-        PlayerCollectibles.give(player,new Emote(emote));
+    public void selectTick(HandiPassScreen screen, int ticksHovered) {
+        super.selectTick(screen, ticksHovered);
+        if (ticksHovered % 200 == 0) {
+            ClientEmoteManager.displayEmote(screen.player,collectible.getEmote(),200);
+        }
     }
 }

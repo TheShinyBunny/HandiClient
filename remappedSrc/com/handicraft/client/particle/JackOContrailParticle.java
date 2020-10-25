@@ -22,7 +22,7 @@ public class JackOContrailParticle extends AnimatedParticle {
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
         this.scale *= 0.75F;
-        this.maxAge = 60 + this.random.nextInt(12);
+        this.maxAge = 60 + this.random.nextInt(8);
         this.setTargetColor(15916745);
         this.setSpriteForAge(spriteProvider);
     }
@@ -49,7 +49,11 @@ public class JackOContrailParticle extends AnimatedParticle {
 
         @Override
         public @Nullable Particle createParticle(DefaultParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-            return new JackOContrailParticle(world,x,y,z,velocityX,velocityY,velocityZ,provider);
+            try {
+                return new JackOContrailParticle(world,x,y,z,velocityX,velocityY,velocityZ,provider);
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 

@@ -4,7 +4,6 @@
 
 package com.handicraft.client.gen.structure;
 
-import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,7 +13,6 @@ import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
@@ -23,18 +21,14 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.Random;
 
 public class DarkTempleStructure extends StructureFeature<DefaultFeatureConfig> {
@@ -72,11 +66,11 @@ public class DarkTempleStructure extends StructureFeature<DefaultFeatureConfig> 
         private final boolean[] hasPlacedChest = new boolean[4];
 
         protected Generator(Random random, int x, int z) {
-            super(CommonMod.DARK_TEMPLE_PIECE_TYPE, random, x, 64, z, 21, 15, 21);
+            super(ModStructurePieces.DARK_TEMPLE_PIECE_TYPE, random, x, 75, z, 21, 15, 21);
         }
 
         public Generator(StructureManager manager, CompoundTag tag) {
-            super(CommonMod.DARK_TEMPLE_PIECE_TYPE, tag);
+            super(ModStructurePieces.DARK_TEMPLE_PIECE_TYPE, tag);
             this.hasPlacedChest[0] = tag.getBoolean("hasPlacedChest0");
             this.hasPlacedChest[1] = tag.getBoolean("hasPlacedChest1");
             this.hasPlacedChest[2] = tag.getBoolean("hasPlacedChest2");

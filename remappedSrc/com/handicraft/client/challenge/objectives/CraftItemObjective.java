@@ -5,110 +5,60 @@
 package com.handicraft.client.challenge.objectives;
 
 import com.handicraft.client.util.HandiUtils;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.predicate.PlayerPredicate;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
-import java.util.Random;
 import java.util.function.Predicate;
 
-import static com.handicraft.client.challenge.objectives.CraftItemObjective.*;
-
-public class CraftItemObjective extends ObjectiveType<Instance> {
+public class CraftItemObjective implements ObjectiveType<CraftItemObjective.Instance> {
 
 
     public void trigger(PlayerEntity player, ItemStack stack) {
-        triggerListeners(player,i->i.test(player,stack));
+        trigger(player, i -> i.test(stack),stack.getCount());
     }
 
-    @Override
-    public Instance generate(Random random, CountModifier modifier) {
-        return new Instance(PlayerPredicate.ANY,modifier.modify(HandiUtils.randomEnum(random,Craftable.class)));
+    public Instance create(ItemStack stack, String name) {
+        return new Instance(i->i.isItemEqual(stack), stack, name);
     }
 
-    @Override
-    public Instance fromNBT(CompoundTag tag, PlayerPredicate player) {
-        Craftable c = Craftable.valueOf(tag.getString("craftable"));
-        return new Instance(player,c);
+    public Instance create(Predicate<ItemStack> stack, ItemStack icon, String name) {
+        return new Instance(stack, icon, name);
     }
 
-    public static class Instance extends ObjectiveInstance {
-        private Craftable craftable;
+    public static class Instance implements ObjectiveInstance {
+        private final Predicate<ItemStack> stack;
+        private final ItemStack icon;
+        private final String name;
 
-        public Instance(PlayerPredicate player, Craftable craftable) {
-            super(player);
-            this.craftable = craftable;
+        public Instance(Predicate<ItemStack> stack, ItemStack icon, String name) {
+            this.stack = stack;
+            this.icon = icon;
+            this.name = name;
         }
 
-        public boolean test(PlayerEntity player, ItemStack result) {
-            return super.test(player) && craftable.test(result);
+        public Instance(ItemStack stack, String name) {
+            this(i->i.isItemEqual(stack),stack,name);
         }
 
         @Override
         public Text getText(int count) {
-            return new TranslatableText("objective.craft", count, HandiUtils.pluralize(count * craftable.count,craftable.getName()));
+            return new LiteralText("Craft " + count + " " + HandiUtils.pluralize(count,name));
+        }
+
+        public boolean test(ItemStack stack) {
+            return this.stack.test(stack);
         }
 
         @Override
-        public ItemConvertible[] getIcons() {
-            return new ItemConvertible[]{craftable.icon};
+        public ItemStack getIcon() {
+            return icon;
         }
 
         @Override
-        public void toNBT(CompoundTag tag) {
-            tag.putString("craftable",craftable.name());
-        }
-    }
-
-    public enum Craftable implements ObjectiveParameter<ItemStack> {
-        STICK(4,1, Items.STICK,4,"Stick(s)"),
-        FURNACE(2,0.2F, Blocks.FURNACE, 1,"Furnace(s)"),
-        SLAB(2,0.5F,i->i instanceof BlockItem && ((BlockItem)i).getBlock() instanceof SlabBlock,Blocks.SMOOTH_STONE_SLAB,6,"Slab(s) of any type"),
-        REPEATER(1,0.2F,Blocks.REPEATER,1,"Repeater(s)");
-
-        private int weight;
-        private float countModifier;
-        private Predicate<Item> result;
-        private int count;
-        private String name;
-        private ItemConvertible icon;
-
-        Craftable(int weight, float countModifier, Predicate<Item> result, ItemConvertible icon, int count, String name) {
-            this.weight = weight;
-            this.countModifier = countModifier;
-            this.result = result;
-            this.count = count;
-            this.name = name;
-            this.icon = icon;
-        }
-
-        Craftable(int weight, float countModifier, ItemConvertible result, int count, String name) {
-            this(weight,countModifier,i->i == result.asItem(),result,count, name);
-        }
-
-        @Override
-        public float getCountModifier() {
-            return countModifier * count;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public boolean test(ItemStack input) {
-            return result.test(input.getItem());
-        }
-
-        @Override
-        public int getWeight() {
-            return weight;
+        public ObjectiveType<?> getType() {
+            return Objectives.CRAFT_ITEM;
         }
     }
 

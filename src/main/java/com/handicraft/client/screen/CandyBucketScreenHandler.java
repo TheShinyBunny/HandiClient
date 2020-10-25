@@ -21,10 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class CandyBucketScreenHandler extends ScreenHandler {
 
-    private final PlayerEntity user;
-    private final int bucketSlot;
-    private final SimpleInventory inventory;
-
     public CandyBucketScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId,playerInventory,new SimpleInventory(9),buf.readVarInt());
     }
@@ -32,9 +28,13 @@ public class CandyBucketScreenHandler extends ScreenHandler {
     public CandyBucketScreenHandler(int syncId, PlayerInventory playerInventory, SimpleInventory inventory, int bucketSlot) {
         super(CommonMod.CANDY_BUCKET_HANDLER_TYPE, syncId);
         int i = (1 - 4) * 18;
-        this.user = playerInventory.player;
-        this.inventory = inventory;
-        this.bucketSlot = bucketSlot;
+
+        inventory.addListener((sender)->{
+            int slot = bucketSlot == -1 ? 40 : bucketSlot;
+            ItemStack bucket = playerInventory.getStack(slot);
+            CandyBucketItem.setItems(bucket, ((SimpleInventoryAccessor) sender).getStacks());
+            playerInventory.setStack(slot,bucket);
+        });
 
         int n;
         int m;
@@ -86,14 +86,4 @@ public class CandyBucketScreenHandler extends ScreenHandler {
 
         return itemStack;
     }
-
-    @Override
-    public void onContentChanged(Inventory inventory) {
-        super.onContentChanged(inventory);
-        int slot = bucketSlot == -1 ? 40 : bucketSlot;
-        ItemStack bucket = user.inventory.getStack(slot);
-        CandyBucketItem.setItems(bucket, ((SimpleInventoryAccessor) inventory).getStacks());
-        user.inventory.setStack(slot,bucket);
-    }
-
 }

@@ -15,17 +15,17 @@ import java.util.UUID;
 
 public abstract class Challenge<I extends ObjectiveInstance> {
 
-    private UUID id;
+    private int id;
     protected ObjectiveType<I> objective;
     protected int minCount;
 
-    public Challenge(UUID id, ObjectiveType<I> objective, int minCount) {
+    public Challenge(int id, ObjectiveType<I> objective, int minCount) {
         this.id = id;
         this.objective = objective;
         this.minCount = minCount;
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 
@@ -42,8 +42,6 @@ public abstract class Challenge<I extends ObjectiveInstance> {
     public void writePacket(PacketByteBuf buf) {
 
     }
-
-    public abstract CompoundTag toNBT();
 
     @Override
     public String toString() {
@@ -64,6 +62,8 @@ public abstract class Challenge<I extends ObjectiveInstance> {
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id;
     }
+
+    public abstract ChallengeInstance createNewInstance();
 }

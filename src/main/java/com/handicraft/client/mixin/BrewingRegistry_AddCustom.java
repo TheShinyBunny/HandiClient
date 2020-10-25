@@ -5,6 +5,7 @@
 package com.handicraft.client.mixin;
 
 import com.handicraft.client.ModPotions;
+import com.handicraft.client.item.ModItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
@@ -26,9 +27,9 @@ public abstract class BrewingRegistry_AddCustom {
 
     @Inject(method = "registerDefaults",at = @At("TAIL"))
     private static void registerRecipes(CallbackInfo ci) {
-        registerPotionRecipe(Potions.AWKWARD, Items.BEETROOT, ModPotions.HASTE_POTION);
+        /*registerPotionRecipe(Potions.AWKWARD, ModItems.GOLDEN_BEETROOT, ModPotions.HASTE_POTION);
         registerPotionRecipe(ModPotions.HASTE_POTION,Items.REDSTONE,ModPotions.LONG_HASTE_POTION);
-        registerPotionRecipe(ModPotions.HASTE_POTION,Items.GLOWSTONE_DUST,ModPotions.STRONG_HASTE_POTION);
+        registerPotionRecipe(ModPotions.HASTE_POTION,Items.GLOWSTONE_DUST,ModPotions.STRONG_HASTE_POTION);*/
     }
 
 }

@@ -5,16 +5,18 @@
 package com.handicraft.client.rewards;
 
 import com.handicraft.client.client.screen.HandiPassScreen;
+import com.handicraft.client.collectibles.Collectible;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class Reward {
@@ -35,27 +37,33 @@ public abstract class Reward {
         return REGISTRY.stream().filter(r->r.level == level).collect(Collectors.toList());
     }
 
+    public static void register(Identifier id, Reward reward) {
+        Registry.register(REGISTRY,id,reward);
+    }
+
+    public static Reward getByCollectible(Collectible collectible) {
+        return REGISTRY.stream().filter(r->r instanceof CollectibleReward && ((CollectibleReward<?>) r).getCollectible() == collectible).findAny().orElse(null);
+    }
+
+    public static List<Reward> getNext(int level) {
+        Optional<Integer> min = REGISTRY.stream().filter(r->r.level > level).min(Comparator.comparingInt(Reward::getLevel)).map(Reward::getLevel);
+        return min.isPresent() ? getByLevel(min.get()) : new ArrayList<>();
+    }
+
     @Environment(EnvType.CLIENT)
-    public void startedHover(HandiPassScreen screen) {
+    public void onSelect(HandiPassScreen screen) {
 
     }
 
     @Environment(EnvType.CLIENT)
-    public void hoveredTick(HandiPassScreen screen, int ticksHovered) {
+    public void selectTick(HandiPassScreen screen, int ticksHovered) {
 
     }
 
     @Environment(EnvType.CLIENT)
-    public void stoppedHover(HandiPassScreen screen) {
+    public void onDeselect(HandiPassScreen screen) {
 
     }
-
-    @Environment(EnvType.CLIENT)
-    public void clicked(HandiPassScreen screen) {
-
-    }
-
-    public abstract void giveReward(PlayerEntity player);
 
     public String getName() {
         return name;
@@ -73,5 +81,9 @@ public abstract class Reward {
 
     public int getLevel() {
         return level;
+    }
+
+    public boolean isObtainable(int passLevel) {
+        return this.level > 0 && passLevel >= this.level;
     }
 }

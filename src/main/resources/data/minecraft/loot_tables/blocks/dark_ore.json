@@ -32,11 +32,6 @@
                 {
                   "function": "minecraft:set_count",
                   "count": 1.0
-                },
-                {
-                  "function": "minecraft:apply_bonus",
-                  "enchantment": "minecraft:fortune",
-                  "formula": "minecraft:ore_drops"
                 }
               ],
               "name": "minecraft:dark_ruby"

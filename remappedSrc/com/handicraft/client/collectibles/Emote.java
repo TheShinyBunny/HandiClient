@@ -10,7 +10,11 @@ public class Emote extends Collectible {
     private final Identifier emote;
 
     public Emote(Identifier emote) {
-        super(CollectibleType.EMOTE);
+        super(null);
         this.emote = emote;
+    }
+
+    public Identifier getEmote() {
+        return emote;
     }
 }

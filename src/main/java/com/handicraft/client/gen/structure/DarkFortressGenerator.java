@@ -6,7 +6,9 @@ package com.handicraft.client.gen.structure;
 
 import com.google.common.collect.Lists;
 import com.handicraft.client.CommonMod;
+import com.handicraft.client.block.DarkWallTorchBlock;
 import com.handicraft.client.block.ModBlocks;
+import com.handicraft.client.fluid.ModFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
@@ -20,6 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -35,6 +39,7 @@ import java.util.Random;
 
 public class DarkFortressGenerator {
 
+    public static final Identifier DARK_FORTRESS_CHEST_LOOT = new Identifier("chests/dark_fortress_chest");
     private static final DarkFortressGenerator.PieceData[] field_14494 = new DarkFortressGenerator.PieceData[]{new DarkFortressGenerator.PieceData(DarkFortressGenerator.Bridge.class, 30, 0, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeCrossing.class, 10, 4), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeSmallCrossing.class, 10, 4), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeStairs.class, 10, 3), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgePlatform.class, 5, 2), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorExit.class, 5, 1)};
     private static final DarkFortressGenerator.PieceData[] field_14493 = new DarkFortressGenerator.PieceData[]{new DarkFortressGenerator.PieceData(DarkFortressGenerator.SmallCorridor.class, 25, 0, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorCrossing.class, 15, 5), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorRightTurn.class, 5, 10), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorLeftTurn.class, 5, 10), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorStairs.class, 10, 3, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorBalcony.class, 7, 2), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorNetherWartsRoom.class, 5, 2)};
 
@@ -182,6 +187,9 @@ public class DarkFortressGenerator {
                 }
             }
 
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.EAST), 1, 6, 5, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 3, 6, 5, boundingBox);
+
             return true;
         }
     }
@@ -229,8 +237,11 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
             if (this.containsChest && boundingBox.contains(new BlockPos(this.applyXTransform(3, 3), this.applyYTransform(2), this.applyZTransform(3, 3)))) {
                 this.containsChest = false;
-                this.addChest(structureWorldAccess, boundingBox, random, 3, 2, 3, LootTables.NETHER_BRIDGE_CHEST);
+                this.addChest(structureWorldAccess, boundingBox, random, 3, 2, 3, DARK_FORTRESS_CHEST_LOOT);
             }
+
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.NORTH), 0, 3, 1, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.EAST), 1, 3, 0, boundingBox);
 
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 6, 0, 4, 6, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
 
@@ -287,8 +298,11 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
             if (this.containsChest && boundingBox.contains(new BlockPos(this.applyXTransform(1, 3), this.applyYTransform(2), this.applyZTransform(1, 3)))) {
                 this.containsChest = false;
-                this.addChest(structureWorldAccess, boundingBox, random, 1, 2, 3, LootTables.NETHER_BRIDGE_CHEST);
+                this.addChest(structureWorldAccess, boundingBox, random, 1, 2, 3, DARK_FORTRESS_CHEST_LOOT);
             }
+
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 3, 3, 0, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.NORTH), 4, 3, 1, boundingBox);
 
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 6, 0, 4, 6, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
 
@@ -366,13 +380,15 @@ public class DarkFortressGenerator {
         public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 0, 0, 4, 1, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 4, 5, 4, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            BlockState blockState = (BlockState)((BlockState)ModBlocks.DARK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
+            BlockState blockState = ModBlocks.DARK_FENCE.getDefaultState().with(FenceBlock.NORTH, true).with(FenceBlock.SOUTH, true);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 5, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 4, 2, 0, 4, 5, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 1, 0, 4, 1, blockState, blockState, false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 3, 0, 4, 3, blockState, blockState, false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 4, 3, 1, 4, 4, 1, blockState, blockState, false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 4, 3, 3, 4, 4, 3, blockState, blockState, false);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.EAST), 1, 3, 2, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 3, 3, 2, boundingBox);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 6, 0, 4, 6, 4, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
 
             for(int i = 0; i <= 4; ++i) {
@@ -418,6 +434,8 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 8, 5, 0, 10, 12, 1, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 5, 9, 0, 7, 12, 1, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 2, 11, 2, 10, 12, 10, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.EAST), 2, 7, 6, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 10, 7, 6, boundingBox);
             BlockState blockState = ModBlocks.DARK_FENCE.getDefaultState().with(FenceBlock.WEST, true).with(FenceBlock.EAST, true);
             BlockState blockState2 = ModBlocks.DARK_FENCE.getDefaultState().with(FenceBlock.NORTH, true).with(FenceBlock.SOUTH, true);
             BlockState blockState3 = blockState2.with(FenceBlock.WEST, true);
@@ -486,8 +504,8 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 9, 5, 2, 10, 5, 3, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 9, 5, 9, 10, 5, 10, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 10, 5, 4, 10, 5, 8, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
-            BlockState blockState6 = (BlockState)blockState5.with(StairsBlock.FACING, Direction.EAST);
-            BlockState blockState7 = (BlockState)blockState5.with(StairsBlock.FACING, Direction.WEST);
+            BlockState blockState6 = blockState5.with(StairsBlock.FACING, Direction.EAST);
+            BlockState blockState7 = blockState5.with(StairsBlock.FACING, Direction.WEST);
             this.addBlock(structureWorldAccess, blockState7, 4, 5, 2, boundingBox);
             this.addBlock(structureWorldAccess, blockState7, 4, 5, 3, boundingBox);
             this.addBlock(structureWorldAccess, blockState7, 4, 5, 9, boundingBox);
@@ -500,6 +518,8 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 8, 4, 4, 9, 4, 8, ModBlocks.SHADOW_STONE.getDefaultState(), ModBlocks.SHADOW_STONE.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 3, 5, 4, 4, 5, 8, ModBlocks.DARK_SAPLING.getDefaultState(), ModBlocks.DARK_SAPLING.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 8, 5, 4, 9, 5, 8, ModBlocks.DARK_SAPLING.getDefaultState(), ModBlocks.DARK_SAPLING.getDefaultState(), false);
+            this.fillWithOutline(structureWorldAccess, boundingBox, 3, 6, 4, 4, 6, 8, Blocks.TRIPWIRE.getDefaultState(), Blocks.TRIPWIRE.getDefaultState(), false);
+            this.fillWithOutline(structureWorldAccess, boundingBox, 8, 6, 4, 9, 6, 8, Blocks.TRIPWIRE.getDefaultState(), Blocks.TRIPWIRE.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 4, 2, 0, 8, 2, 12, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 4, 12, 2, 8, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 4, 0, 0, 8, 1, 3, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
@@ -614,12 +634,15 @@ public class DarkFortressGenerator {
 
             this.fillWithOutline(structureWorldAccess, boundingBox, 5, 5, 5, 7, 5, 7, ModBlocks.DARKNESS_BRICKS.getDefaultState(), ModBlocks.DARKNESS_BRICKS.getDefaultState(), false);
             this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 6, 6, 4, 6, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
-            this.addBlock(structureWorldAccess, ModBlocks.DARKNESS_BRICKS.getDefaultState(), 6, 0, 6, boundingBox);
-            this.addBlock(structureWorldAccess, Blocks.LAVA.getDefaultState(), 6, 5, 6, boundingBox);
+            this.addBlock(structureWorldAccess, ModBlocks.DARKNESS_BRICKS.getDefaultState(), 6, 4, 6, boundingBox);
+            this.addBlock(structureWorldAccess, ModBlocks.COLORED_WATER_BLOCK_MAP.get(DyeColor.PURPLE).getDefaultState(), 6, 5, 6, boundingBox);
             BlockPos blockPos2 = new BlockPos(this.applyXTransform(6, 6), this.applyYTransform(5), this.applyZTransform(6, 6));
             if (boundingBox.contains(blockPos2)) {
-                structureWorldAccess.getFluidTickScheduler().schedule(blockPos2, Fluids.LAVA, 0);
+                structureWorldAccess.getFluidTickScheduler().schedule(blockPos2, ModFluids.getColoredStill(DyeColor.PURPLE), 0);
             }
+
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.EAST), 2, 6, 6, boundingBox);
+            this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 10, 6, 6, boundingBox);
 
             return true;
         }
@@ -818,7 +841,7 @@ public class DarkFortressGenerator {
         protected BridgeCrossing(Random random, int x, int z) {
             super(ModStructurePieces.DARK_FORTRESS_BRIDGE_CROSSING, 0);
             this.setOrientation(Direction.Type.HORIZONTAL.random(random));
-            this.boundingBox = new BlockBox(x, 64, z, x + 19 - 1, 73, z + 19 - 1);
+            this.boundingBox = new BlockBox(x, 94, z, x + 19 - 1, 103, z + 19 - 1);
 
         }
 
@@ -1042,6 +1065,10 @@ public class DarkFortressGenerator {
         }
 
         protected void toNbt(CompoundTag tag) {
+        }
+
+        protected BlockState getRandomTorch(Random random) {
+            return random.nextBoolean() ? ModBlocks.GREEN_FIRE_WALL_TORCH.getDefaultState() : ModBlocks.PURPLE_FIRE_WALL_TORCH.getDefaultState();
         }
 
         private int method_14810(List<DarkFortressGenerator.PieceData> list) {

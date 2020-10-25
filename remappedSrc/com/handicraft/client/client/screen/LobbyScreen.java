@@ -30,10 +30,10 @@ public abstract class LobbyScreen<S extends LobbyScreen<S>> extends Screen imple
 
     private static List<TabButton> tabButtons = Util.make(new ArrayList<>(), l->{
         l.add(new TabButton("gui.title.lobby",new NewTitleScreen(false)));
-        l.add(new TabButton("gui.title.handipass", new HandiPassScreen()));
-        l.add(new TabButton("gui.title.locker",s->{}));
+        l.add(new TabButton("gui.title.handipass", new HandiPassScreen(true)));
+        l.add(new TabButton("gui.title.locker",new LockerScreen(true)));
         l.add(new TabButton("gui.title.challenges", new ChallengesScreen(true)));
-        l.add(new TabButton("gui.title.news", t->{}));
+        //l.add(new TabButton("gui.title.news", t->{}));
         l.add(new TabButton("gui.title.options", s->s.transition.start(new OptionsScreen(s,MinecraftClient.getInstance().options),500)));
     });
 
@@ -53,8 +53,7 @@ public abstract class LobbyScreen<S extends LobbyScreen<S>> extends Screen imple
 
             int offset = 0;
             for (TabButton b : tabButtons) {
-                //addButton(new ImageButton(width / 2 - bwidth / 2 + offset,10,b.width / 3,20,0,0,110,b.texture,b.width,63,b.width,171,x->b.action.run()));
-                addButton(new PlainColorButton(width / 2 - bwidth / 2 + offset, 10, b.getWidth(), 20, b.text, x -> b.action.accept(this), b.isSelected(this), 0x2bbfbfbf, 0xffffde00, 0x00ffffff, 0, 0x00ffff00, 0x2bbfbfbf));
+                addButton(new PlainColorButton(width / 2 - bwidth / 2 + offset, 10, b.getWidth(), 20, b.text, x -> b.action.accept(this), b.isSelected(this), 0x2bbfbfbf, 0xffffde00, 0x00ffffff, 0, 0x00ffff00, 0x2bbfbfbf,0));
                 offset += 10 + b.getWidth();
             }
         }
@@ -89,7 +88,7 @@ public abstract class LobbyScreen<S extends LobbyScreen<S>> extends Screen imple
         }
 
         public TabButton(String textKey, Consumer<LobbyScreen<?>> action) {
-            this.text = new TranslatableText(textKey).styled(s->s.withFont(ClientMod.NOTO));
+            this.text = new TranslatableText(textKey).styled(ClientMod.FONT_APPLIER);
             this.action = action;
         }
 

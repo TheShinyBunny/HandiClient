@@ -15,10 +15,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class DarkFireBlock extends AbstractFireBlock {
-    private final Tag<Block> baseTag;
+import java.util.function.Supplier;
 
-    public DarkFireBlock(Settings settings, Tag<Block> baseTag) {
+public class DarkFireBlock extends AbstractFireBlock {
+    private final Supplier<Tag<Block>> baseTag;
+
+    public DarkFireBlock(Settings settings, Supplier<Tag<Block>> baseTag) {
         super(settings, 2f);
         this.baseTag = baseTag;
     }
@@ -32,7 +34,7 @@ public class DarkFireBlock extends AbstractFireBlock {
     }
 
     public boolean isDarkFireBase(Block block) {
-        return block.isIn(baseTag);
+        return block.isIn(baseTag.get());
     }
 
     @Override

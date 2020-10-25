@@ -4,41 +4,50 @@
 
 package com.handicraft.client.block;
 
+import com.handicraft.client.CommonMod;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class DarkPortalBlock extends NetherPortalBlock {
+public class DarkPortalBlock extends Block {
+
     public DarkPortalBlock() {
-        super(FabricBlockSettings.copyOf(Blocks.NETHER_PORTAL).dropsNothing().lightLevel(15).strength(-1.0F, 3600000.0F));
-    }
-
-    @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-
+        super(FabricBlockSettings.of(Material.PORTAL).noCollision().ticksRandomly().sounds(BlockSoundGroup.GLASS).dropsNothing().lightLevel(15).strength(-1.0F, 3600000.0F));
     }
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
             if (!world.isClient) {
-                ServerWorld dest = world.getServer().getWorld(RegistryKey.of(Registry.DIMENSION,new Identifier("handicraft:darkness")));
-                if (dest == null) {
-                    System.out.println("NO DARKNESS DIMENSION!");
+                if (world.getRegistryKey() == CommonMod.DARKNESS_KEY) {
+                    entity.moveToWorld(world.getServer().getOverworld());
                 } else {
-                    entity.moveToWorld(dest);
+                    ServerWorld dest = world.getServer().getWorld(CommonMod.DARKNESS_KEY);
+                    if (dest == null) {
+                        System.out.println("NO DARKNESS DIMENSION!");
+                    } else {
+                        entity.moveToWorld(dest);
+                    }
                 }
             }
         }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        return ItemStack.EMPTY;
     }
 }

@@ -6,41 +6,39 @@ package com.handicraft.client.rewards;
 
 import com.handicraft.client.client.screen.HandiPassScreen;
 import com.handicraft.client.collectibles.Cape;
-import com.handicraft.client.collectibles.PlayerCollectibles;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
 
-public class CapeReward extends Reward {
-    private Identifier cape;
+public class CapeReward extends CollectibleReward<Cape> {
 
-    public CapeReward(String name, int level, int textureHeight, Identifier cape) {
-        super(name, level, textureHeight);
-        this.cape = cape;
+    private boolean elytra;
+
+    public CapeReward(String name, int level, int textureHeight, Cape cape) {
+        super(name, level, textureHeight, cape);
     }
 
     @Override
-    public void startedHover(HandiPassScreen screen) {
-        screen.player.setCape(cape);
+    public void onSelect(HandiPassScreen screen) {
+        screen.player.setCape(collectible.getTextureId());
+        elytra = true;
     }
 
     @Override
-    public void hoveredTick(HandiPassScreen screen, int ticksHovered) {
-        if (ticksHovered == 300) {
-            screen.player.equipStack(EquipmentSlot.CHEST,new ItemStack(Items.ELYTRA));
+    public void selectTick(HandiPassScreen screen, int ticksHovered) {
+        if (ticksHovered % 300 == 0) {
+            if (elytra) {
+                screen.player.equipStack(EquipmentSlot.CHEST,ItemStack.EMPTY);
+            } else {
+                screen.player.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.ELYTRA));
+            }
+            elytra = !elytra;
         }
     }
 
     @Override
-    public void stoppedHover(HandiPassScreen screen) {
+    public void onDeselect(HandiPassScreen screen) {
         screen.player.setCape(null);
         screen.player.equipStack(EquipmentSlot.CHEST,ItemStack.EMPTY);
-    }
-
-    @Override
-    public void giveReward(PlayerEntity player) {
-        PlayerCollectibles.give(player,new Cape(cape));
     }
 }

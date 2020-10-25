@@ -4,19 +4,15 @@
 
 package com.handicraft.client.item;
 
-import com.handicraft.client.CommonMod;
 import com.handicraft.client.ModSounds;
 import com.handicraft.client.ModTags;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.util.Register;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
-import net.minecraft.potion.Potion;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 public class ModItems {
@@ -28,7 +24,7 @@ public class ModItems {
     public static final Item DARKNESS_STAR = new DarknessStarItem();
 
     @Register("darkness_sword")
-    public static final DarknessSword DARKNESS_SWORD = new DarknessSword();
+    public static final DarknessSwordItem DARKNESS_SWORD = new DarknessSwordItem();
 
     @Register("spooky_scary_music_disc")
     public static final CustomMusicDisc SPOOKY_SCARY_SKELETONS_DISC = new CustomMusicDisc(15,ModSounds.SPOOKY_SCARY_SKELETONS);
@@ -40,7 +36,7 @@ public class ModItems {
     public static final Item RUBY = new Item(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON).fireproof());
 
     @Register("golden_beetroot")
-    public static final Item GOLDEN_BEETROOT = new Item(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().saturationModifier(1f).hunger(6).snack().alwaysEdible().statusEffect(new StatusEffectInstance(StatusEffects.HASTE,20 * 90),1f).build()));
+    public static final Item GOLDEN_BEETROOT = new Item(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().saturationModifier(1f).hunger(6).snack().alwaysEdible().statusEffect(new StatusEffectInstance(StatusEffects.HASTE,20 * 90,1),1f).build()));
 
     @Register("candy")
     public static final CandyItem CANDY = new CandyItem();
@@ -60,6 +56,8 @@ public class ModItems {
     @Register("purple_fire_torch")
     public static final Item PURPLE_FIRE_TORCH = new WallStandingBlockItem(ModBlocks.PURPLE_FIRE_TORCH,ModBlocks.PURPLE_FIRE_WALL_TORCH,new Item.Settings().group(ItemGroup.DECORATIONS));
 
+    @Register("darkness_axe")
+    public static final Item DARKNESS_AXE = new DarknessAxeItem();
 
     public static class Tags {
 

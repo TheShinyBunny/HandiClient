@@ -4,70 +4,77 @@
 
 package com.handicraft.client.rewards;
 
-import com.handicraft.client.CommonMod;
 import com.handicraft.client.client.screen.HandiPassScreen;
 import com.handicraft.client.collectibles.ParticleTrail;
-import com.handicraft.client.collectibles.PlayerCollectibles;
-import com.handicraft.client.particle.CustomParticleManager;
-import com.handicraft.client.particle.CustomSpriteProvider;
-import com.handicraft.client.particle.JackOContrailParticle;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.fabric.impl.client.particle.FabricSpriteProviderImpl;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
 
-public class ParticleReward extends Reward {
+public class ParticleReward extends CollectibleReward<ParticleTrail> {
 
-    private ParticleEffect particleType;
-
-    public ParticleReward(String name, int level, int textureHeight, ParticleEffect particleType) {
-        super(name, level, textureHeight);
-        this.particleType = particleType;
+    public ParticleReward(String name, int level, int textureHeight, ParticleTrail particleType) {
+        super(name, level, textureHeight,particleType);
     }
 
     @Override
-    public void startedHover(HandiPassScreen screen) {
-        super.startedHover(screen);
+    public void onSelect(HandiPassScreen screen) {
+        super.onSelect(screen);
         screen.player.visible = false;
-        MinecraftClient.getInstance().particleManager.setWorld((ClientWorld)screen.player.world);
+        if (MinecraftClient.getInstance().world == null) {
+            MinecraftClient.getInstance().particleManager.setWorld((ClientWorld) screen.player.world);
+        } else {
+            screen.backgroundVisible = false;
+        }
     }
 
     @Override
-    public void hoveredTick(HandiPassScreen screen, int ticksHovered) {
-        super.hoveredTick(screen, ticksHovered);
+    public void selectTick(HandiPassScreen screen, int ticksHovered) {
+        super.selectTick(screen, ticksHovered);
         MinecraftClient client = MinecraftClient.getInstance();
-        screen.addRenderJob(matrices->{
-            RenderSystem.pushMatrix();
-            float w = (client.getWindow().getWidth() / (float)screen.width) * -170f;
-            float h = (client.getWindow().getHeight() / (float)screen.height) * -55f;
-            RenderSystem.rotatef(180,0,0,1f);
-            RenderSystem.translatef(w,h,0);
-            client.particleManager.renderParticles(matrices,null,MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager(), MinecraftClient.getInstance().gameRenderer.getCamera(),1);
-            RenderSystem.popMatrix();
-        });
-        screen.addTickJob(()->{
-            if (ticksHovered % 10 == 0) {
-                client.particleManager.addParticle(particleType,0, 0, 0, (Math.random() - 0.5) * 4, Math.random() * 8, (Math.random() - 0.5) * 4);
-            }
-            client.particleManager.tick();
-        });
+        if (client.player == null) {
+            screen.addRenderJob(matrices -> {
+                RenderSystem.pushMatrix();
+                float w = (screen.width / 1920f) * -1560;
+                float h = (screen.height / 720f) * -400;
+                RenderSystem.rotatef(180, 0, 0, 1f);
+                RenderSystem.translatef(w, h, 0);
+                client.particleManager.renderParticles(matrices, null, MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager(), MinecraftClient.getInstance().gameRenderer.getCamera(), 1);
+                RenderSystem.popMatrix();
+            });
+            screen.addTickJob(() -> {
+                if (ticksHovered % 10 == 0) {
+                    client.particleManager.addParticle(collectible.getEffect(), 0, 0, 0, (Math.random() - 0.5) * 4, Math.random() * 8, (Math.random() - 0.5) * 4);
+                }
+                try {
+                    client.particleManager.tick();
+                } catch (Exception ignored) {
+
+                }
+            });
+        } else if (ticksHovered % 40 == 0) {
+            Vec3d camPos = client.gameRenderer.getCamera().getPos();
+            float f = client.gameRenderer.getCamera().getPitch() * 0.017453292F;
+            float g = -(client.gameRenderer.getCamera().getYaw() + 55) * 0.017453292F;
+            float h = MathHelper.cos(g);
+            float i = MathHelper.sin(g);
+            float j = MathHelper.cos(f);
+            float k = MathHelper.sin(f);
+            Vec3d rot = new Vec3d(i * j, -k, h * j);
+            camPos = camPos.add(rot.multiply(2));
+            client.player.world.addParticle(collectible.getEffect(), camPos.getX(), camPos.getY(), camPos.getZ(), (Math.random() - 0.5) * 0.05, Math.random() * 0.2, (Math.random() - 0.5) * 0.05);
+        }
     }
 
     @Override
-    public void stoppedHover(HandiPassScreen screen) {
-        super.stoppedHover(screen);
+    public void onDeselect(HandiPassScreen screen) {
+        super.onDeselect(screen);
         screen.player.visible = true;
-    }
-
-    @Override
-    public void giveReward(PlayerEntity player) {
-        PlayerCollectibles.give(player,new ParticleTrail(particleType));
+        if (MinecraftClient.getInstance().world != null) {
+            screen.backgroundVisible = true;
+        }
     }
 }

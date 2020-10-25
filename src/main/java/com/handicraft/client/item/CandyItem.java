@@ -19,7 +19,7 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class CandyItem extends Item {
     public CandyItem() {
-        super(new Settings().food(new FoodComponent.Builder().snack().alwaysEdible().hunger(1).saturationModifier(0.1f).statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,20 * 40,1),1f).build()).group(ItemGroup.FOOD));
+        super(new Settings().food(new FoodComponent.Builder().snack().alwaysEdible().hunger(1).saturationModifier(0.1f).statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,20 * 30,1),1f).build()).group(ItemGroup.FOOD));
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             FabricModelPredicateProviderRegistry.register(this,new Identifier("kind"), (stack, world, entity) -> {
                 if (stack.hasTag()) {

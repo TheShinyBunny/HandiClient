@@ -47,6 +47,7 @@ public class PlayerPersistentData implements PersistentData {
     public void read(CompoundTag tag) {
         if (tag.contains("BukkitValues")) {
             storedXP = tag.getCompound("BukkitValues").getInt("handicraft:enderchest/stored_xp");
+            tag.remove("BukkitValues");
         } else {
             storedXP = tag.getInt("storedXP");
         }
