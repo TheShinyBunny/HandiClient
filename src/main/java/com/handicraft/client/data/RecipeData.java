@@ -148,7 +148,7 @@ public class RecipeData implements DataProvider {
         surrounded(consumer,GREEN_FIRE_LANTERN,ModItems.GREEN_FIRE_TORCH,IRON_NUGGET);
         surrounded(consumer,PURPLE_FIRE_LANTERN,ModItems.PURPLE_FIRE_TORCH,IRON_NUGGET);
 
-        checkerboard(consumer,DARK_OBSIDIAN,OBSIDIAN,DARK_RUBY);
+        //checkerboard(consumer,DARK_OBSIDIAN,OBSIDIAN,DARK_RUBY);
         bricks(consumer,DARKNESS_BRICKS,DARK_STONE);
         ShapedRecipeJsonFactory.create(JACK_SOUL_LANTERN).pattern("P").pattern("T").input('P',CARVED_PUMPKIN).input('T',SOUL_TORCH).criterion("has_soul_torch",conditionsFromItem(SOUL_TORCH)).offerTo(consumer);
     }
@@ -165,17 +165,12 @@ public class RecipeData implements DataProvider {
         wood(consumer,wood,log);
         wood(consumer,strippedWood,strippedLog);
         ShapelessRecipeJsonFactory.create(planks,4).input(logs).group("planks").criterion("has_logs", conditionsFromTag(logs)).offerTo(consumer);
-        sticks(consumer,planks);
         ShapedRecipeJsonFactory.create(slab,6).pattern("###").input('#',planks).group("wooden_slab").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(stairs,4).pattern("#  ").pattern("## ").pattern("###").input('#',planks).group("wooden_stairs").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(fence,3).pattern("W#W").pattern("W#W").input('#', STICK).input('W',planks).group("wooden_fence").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(fenceGate).pattern("#W#").pattern("#W#").input('#', STICK).input('W',planks).group("wooden_fence_gate").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(button).input(planks).criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(pressurePlate).pattern("##").input('#',planks).group("wooden_pressure_plate").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
-    }
-
-    private static void sticks(Consumer<RecipeJsonProvider> consumer, Block planks) {
-        ShapedRecipeJsonFactory.create(STICK,4).pattern("#").pattern("#").input('#',planks).criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
     }
 
     private static void surrounded(Consumer<RecipeJsonProvider> consumer, ItemConvertible output, ItemConvertible center, ItemConvertible around) {

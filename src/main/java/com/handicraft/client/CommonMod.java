@@ -313,11 +313,11 @@ public class CommonMod implements ModInitializer {
 
     }
 
-    private <T> void registerAll(Class<?> container, Class<T> type, Registry<T> registry) {
+    public <T> void registerAll(Class<?> container, Class<T> type, Registry<T> registry) {
         registerAll(container,type,registry,null,null);
     }
 
-    private <T> void registerAll(Class<?> container, Class<T> type, Registry<T> registry, TriConsumer<Field,Identifier,T> onRegistered, Function<Identifier,T> defaultFactory) {
+    public <T> void registerAll(Class<?> container, Class<T> type, Registry<T> registry, TriConsumer<Field,Identifier,T> onRegistered, Function<Identifier,T> defaultFactory) {
         for (Field f : container.getDeclaredFields()) {
             Register r = f.getAnnotation(Register.class);
             if (Modifier.isStatic(f.getModifiers()) && type.isAssignableFrom(f.getType()) && r != null) {

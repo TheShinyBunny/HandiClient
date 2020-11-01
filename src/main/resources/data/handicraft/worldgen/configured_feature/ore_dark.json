@@ -2,41 +2,29 @@
   "type": "decorated",
   "config": {
     "decorator": {
-      "type": "count",
-      "config": {
-        "count": 1
-      }
+      "type": "square",
+      "config": {}
     },
     "feature": {
       "type": "decorated",
       "config": {
         "decorator": {
-          "type": "square",
-          "config": {}
+          "type": "range",
+          "config": {
+            "bottom_offset": 0,
+            "top_offset": 0,
+            "maximum": 16
+          }
         },
         "feature": {
-          "type": "decorated",
+          "type": "emerald_ore",
           "config": {
-            "decorator": {
-              "type": "range",
-              "config": {
-                "bottom_offset": 0,
-                "top_offset": 0,
-                "maximum": 16
-              }
+            "size": 8,
+            "target": {
+              "Name": "dark_stone"
             },
-            "feature": {
-              "type": "ore",
-              "config": {
-                "size": 1,
-                "target": {
-                  "predicate_type":"block_match",
-                  "block": "dark_stone"
-                },
-                "state": {
-                  "Name": "dark_ore"
-                }
-              }
+            "state": {
+              "Name": "dark_ore"
             }
           }
         }

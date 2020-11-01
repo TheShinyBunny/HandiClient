@@ -6,6 +6,7 @@ package com.handicraft.client.block;
 
 import com.handicraft.client.CommonMod;
 import com.handicraft.client.entity.DarknessWizardEntity;
+import com.handicraft.client.mixin.client.ClientWorld_CalculateColors;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
@@ -14,10 +15,12 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Wearable;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +50,7 @@ public class JackSoulLanternBlock extends HorizontalFacingBlock implements Weara
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (!oldState.isOf(state.getBlock())) {
+        /*if (!oldState.isOf(state.getBlock())) {
             BlockPattern.Result result = this.getDarknessWizardPattern().searchAround(world, pos);
 
             if (result != null) {
@@ -57,26 +60,23 @@ public class JackSoulLanternBlock extends HorizontalFacingBlock implements Weara
                     world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
                 }
 
-                DarknessWizardEntity darknessWizard = CommonMod.DARKNESS_WIZARD.create(world);
                 BlockPos blockPos = result.translate(0, 2, 0).getBlockPos();
-                darknessWizard.refreshPositionAndAngles(blockPos.getX() + 0.5D, blockPos.getY() + 0.05D, blockPos.getZ() + 0.5D, 0.0F, 0.0F);
-                world.spawnEntity(darknessWizard);
+                if (!world.isClient) {
+                    DarknessWizardEntity darknessWizard = CommonMod.DARKNESS_WIZARD.create(((ServerWorld) world), null, null, null, blockPos, SpawnReason.MOB_SUMMONED, false, false);
+                    world.spawnEntity(darknessWizard);
+                }
 
                 LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
                 lightning.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
                 lightning.setCosmetic(true);
                 world.spawnEntity(lightning);
 
-                for (ServerPlayerEntity p : world.getNonSpectatingEntities(ServerPlayerEntity.class, darknessWizard.getBoundingBox().expand(5.0D))) {
-                    Criteria.SUMMONED_ENTITY.trigger(p, darknessWizard);
-                }
-
                 for(int m = 0; m < this.getDarknessWizardPattern().getHeight(); ++m) {
                     CachedBlockPosition cachedBlockPosition2 = result.translate(0, m, 0);
                     world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.AIR);
                 }
             }
-        }
+        }*/
     }
 
     private BlockPattern getDarknessWizardPattern() {

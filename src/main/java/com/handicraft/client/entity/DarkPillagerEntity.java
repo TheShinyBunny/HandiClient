@@ -33,7 +33,7 @@ public class DarkPillagerEntity extends PillagerEntity {
     @Override
     protected void initEquipment(LocalDifficulty difficulty) {
         equipStack(EquipmentSlot.MAINHAND,new ItemStack(ModItems.DARKNESS_AXE));
-        setEquipmentDropChance(EquipmentSlot.MAINHAND,0.05f);
+        setEquipmentDropChance(EquipmentSlot.MAINHAND,0f);
     }
 
     @Override

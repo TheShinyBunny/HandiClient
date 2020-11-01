@@ -19,7 +19,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_chestplate"
@@ -35,7 +35,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_leggings"
@@ -51,7 +51,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_boots"
@@ -67,7 +67,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_helmet"
@@ -83,7 +83,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:diamond_chestplate"
@@ -99,7 +99,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:diamond_leggings"
@@ -115,7 +115,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_sword"
@@ -131,7 +131,7 @@
                 "max": 39.0,
                 "type": "minecraft:uniform"
               },
-              "treasure": false
+              "treasure": true
             }
           ],
           "name": "minecraft:netherite_pickaxe"
@@ -143,13 +143,13 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 10,
+          "weight": 3,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "min": 1.0,
-                "max": 4.0,
+                "max": 3.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -169,6 +169,12 @@
         },
         {
           "type": "minecraft:item",
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.005
+            }
+          ],
           "name": "minecraft:beacon"
         },
         {

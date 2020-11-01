@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -32,6 +33,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import java.util.Random;
 
 public class DarkTempleStructure extends StructureFeature<DefaultFeatureConfig> {
+
+    public static final Identifier CHEST_LOOT = new Identifier("chests/dark_temple");
 
     public DarkTempleStructure() {
         super(DefaultFeatureConfig.CODEC);
@@ -272,7 +275,7 @@ public class DarkTempleStructure extends StructureFeature<DefaultFeatureConfig> 
                 if (!this.hasPlacedChest[direction.getHorizontal()]) {
                     int p = direction.getOffsetX() * 2;
                     int q = direction.getOffsetZ() * 2;
-                    this.hasPlacedChest[direction.getHorizontal()] = this.addChest(structureWorldAccess, boundingBox, random, 10 + p, -11, 10 + q, LootTables.DESERT_PYRAMID_CHEST);
+                    this.hasPlacedChest[direction.getHorizontal()] = this.addChest(structureWorldAccess, boundingBox, random, 10 + p, -11, 10 + q, CHEST_LOOT);
                 }
             }
 

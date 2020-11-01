@@ -172,8 +172,6 @@ public class ClientMod implements ClientModInitializer {
             }
         });
 
-
-
         Identifier stillTexture = new Identifier("block/water_still");
         Identifier flowingTexture = new Identifier("block/water_flow");
 

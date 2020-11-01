@@ -10,8 +10,8 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.handicraft.client.CommonMod;
-import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.gen.structure.DarkFortressGenerator;
+import com.handicraft.client.gen.structure.DarkTempleStructure;
 import com.handicraft.client.item.ModItems;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.*;
@@ -20,7 +20,6 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.server.LootTablesProvider;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -31,6 +30,7 @@ import net.minecraft.loot.condition.*;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.AlternativeEntry;
+import net.minecraft.loot.entry.EmptyEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.function.*;
@@ -41,7 +41,6 @@ import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -202,20 +201,47 @@ public class LootTableData extends LootTablesProvider {
     }
 
     private static void chests(BiConsumer<Identifier, LootTable.Builder> consumer) {
-        consumer.accept(DarkFortressGenerator.DARK_FORTRESS_CHEST_LOOT,LootTable.builder().pool(LootPool.builder().rolls(UniformLootTableRange.between(3,8))
-                .with(ItemEntry.builder(Items.NETHERITE_CHESTPLATE).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.NETHERITE_LEGGINGS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.NETHERITE_BOOTS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.NETHERITE_HELMET).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.DIAMOND_CHESTPLATE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.DIAMOND_LEGGINGS).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.NETHERITE_SWORD).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
-                .with(ItemEntry.builder(Items.NETHERITE_PICKAXE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39))))
+        consumer.accept(DarkFortressGenerator.CHEST_LOOT,LootTable.builder().pool(LootPool.builder().rolls(UniformLootTableRange.between(3,8))
+                .with(ItemEntry.builder(Items.NETHERITE_CHESTPLATE).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.NETHERITE_LEGGINGS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.NETHERITE_BOOTS).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.NETHERITE_HELMET).weight(5).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.DIAMOND_CHESTPLATE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.DIAMOND_LEGGINGS).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.NETHERITE_SWORD).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.NETHERITE_PICKAXE).weight(10).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
                 .with(ItemEntry.builder(Items.TOTEM_OF_UNDYING).weight(10))
-                .with(ItemEntry.builder(ModItems.RUBY).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1,4))))
+                .with(ItemEntry.builder(ModItems.RUBY).weight(3).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1,3))))
                 .with(ItemEntry.builder(Items.ENCHANTED_BOOK).weight(10).apply(SetNbtLootFunction.builder(createMendingEnchantTag())))
                 .with(ItemEntry.builder(Items.BEACON).weight(1).conditionally(RandomChanceLootCondition.builder(0.005f)))
                 .with(ItemEntry.builder(DARKNESS_BRICKS).weight(9).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(64))))
+        ));
+        consumer.accept(DarkTempleStructure.CHEST_LOOT, LootTable.builder().pool(LootPool.builder().rolls(UniformLootTableRange.between(2.0F, 4.0F))
+                .with(ItemEntry.builder(Items.DIAMOND).weight(5).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+                .with(ItemEntry.builder(Items.IRON_INGOT).weight(15).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 5.0F))))
+                .with(ItemEntry.builder(Items.GOLD_INGOT).weight(15).apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 7.0F))))
+                .with(ItemEntry.builder(Items.EMERALD).weight(15).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+                .with(ItemEntry.builder(Items.BONE).weight(25).apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 6.0F))))
+                .with(ItemEntry.builder(Items.SPIDER_EYE).weight(25).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F))))
+                .with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(25).apply(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F))))
+                .with(ItemEntry.builder(Items.SADDLE).weight(20))
+                .with(ItemEntry.builder(Items.IRON_HORSE_ARMOR).weight(15))
+                .with(ItemEntry.builder(Items.GOLDEN_HORSE_ARMOR).weight(10))
+                .with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR).weight(5))
+                .with(ItemEntry.builder(Items.BOOK).weight(20).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(30,39))))
+                .with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(20))
+                .with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(20))
+                .with(EmptyEntry.Serializer().weight(15))
+        ).pool(LootPool.builder().rolls(ConstantLootTableRange.create(4))
+                .with(ItemEntry.builder(Items.BONE).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 8.0F))))
+                .with(ItemEntry.builder(Items.GUNPOWDER).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 8.0F))))
+                .with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 8.0F))))
+                .with(ItemEntry.builder(Items.STRING).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 8.0F))))
+                .with(ItemEntry.builder(Blocks.SAND).weight(10).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 8.0F))))
+                .with(ItemEntry.builder(Items.DIAMOND_BOOTS).weight(3).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.DIAMOND_CHESTPLATE).weight(3).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.DIAMOND_LEGGINGS).weight(3).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
+                .with(ItemEntry.builder(Items.DIAMOND_HELMET).weight(3).apply(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20,39)).allowTreasureEnchantments()))
         ));
     }
 

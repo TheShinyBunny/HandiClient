@@ -122,6 +122,11 @@ public class DarknessWizardEntity extends IllusionerEntity {
         }
     }
 
+    @Override
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+        return false;
+    }
+
     class SpawnVexesGoal extends CastSpellGoal {
 
         private final TargetPredicate closeVexPredicate;
@@ -185,7 +190,7 @@ public class DarknessWizardEntity extends IllusionerEntity {
         @Override
         public void start() {
             LivingEntity target = getTarget();
-            Vec3d rot = target.getRotationVec(1f).negate();
+            Vec3d rot = target.getRotationVec(1f).multiply(-1f);
             double dist = 10;
             BlockHitResult res = world.raycast(new RaycastContext(target.getPos(),target.getPos().add(rot.x * dist,rot.y * dist,rot.z * dist), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.SOURCE_ONLY,DarknessWizardEntity.this));
             BlockPos pos = res.getBlockPos();

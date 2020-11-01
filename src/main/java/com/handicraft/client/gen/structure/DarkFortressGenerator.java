@@ -15,9 +15,6 @@ import net.minecraft.block.FenceBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -39,7 +36,7 @@ import java.util.Random;
 
 public class DarkFortressGenerator {
 
-    public static final Identifier DARK_FORTRESS_CHEST_LOOT = new Identifier("chests/dark_fortress_chest");
+    public static final Identifier CHEST_LOOT = new Identifier("chests/dark_fortress_chest");
     private static final DarkFortressGenerator.PieceData[] field_14494 = new DarkFortressGenerator.PieceData[]{new DarkFortressGenerator.PieceData(DarkFortressGenerator.Bridge.class, 30, 0, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeCrossing.class, 10, 4), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeSmallCrossing.class, 10, 4), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgeStairs.class, 10, 3), new DarkFortressGenerator.PieceData(DarkFortressGenerator.BridgePlatform.class, 5, 2), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorExit.class, 5, 1)};
     private static final DarkFortressGenerator.PieceData[] field_14493 = new DarkFortressGenerator.PieceData[]{new DarkFortressGenerator.PieceData(DarkFortressGenerator.SmallCorridor.class, 25, 0, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorCrossing.class, 15, 5), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorRightTurn.class, 5, 10), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorLeftTurn.class, 5, 10), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorStairs.class, 10, 3, true), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorBalcony.class, 7, 2), new DarkFortressGenerator.PieceData(DarkFortressGenerator.CorridorNetherWartsRoom.class, 5, 2)};
 
@@ -237,7 +234,7 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
             if (this.containsChest && boundingBox.contains(new BlockPos(this.applyXTransform(3, 3), this.applyYTransform(2), this.applyZTransform(3, 3)))) {
                 this.containsChest = false;
-                this.addChest(structureWorldAccess, boundingBox, random, 3, 2, 3, DARK_FORTRESS_CHEST_LOOT);
+                this.addChest(structureWorldAccess, boundingBox, random, 3, 2, 3, CHEST_LOOT);
             }
 
             this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.NORTH), 0, 3, 1, boundingBox);
@@ -298,7 +295,7 @@ public class DarkFortressGenerator {
             this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 4, 3, 4, 4, blockState, blockState, false);
             if (this.containsChest && boundingBox.contains(new BlockPos(this.applyXTransform(1, 3), this.applyYTransform(2), this.applyZTransform(1, 3)))) {
                 this.containsChest = false;
-                this.addChest(structureWorldAccess, boundingBox, random, 1, 2, 3, DARK_FORTRESS_CHEST_LOOT);
+                this.addChest(structureWorldAccess, boundingBox, random, 1, 2, 3, CHEST_LOOT);
             }
 
             this.addBlock(structureWorldAccess, getRandomTorch(random).with(DarkWallTorchBlock.FACING,Direction.WEST), 3, 3, 0, boundingBox);

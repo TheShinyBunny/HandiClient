@@ -28,13 +28,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Tracks challenges of a player on the server
+ */
 public class PlayerChallenges {
 
     public static final Identifier COMPLETED = new Identifier("hcclient:completed_challenge");
     public static final Identifier PROGRESS_UPDATE = new Identifier("hcclient:challenge_progress");
     public static final Identifier UPDATE_CHALLENGES = new Identifier("hcclient:update_challenges");
 
+    /**
+     * The current challenge progresses of the player
+     */
     private List<ChallengeInstance> challenges;
+    /**
+     * The player owning this instance
+     */
     private ServerPlayerEntity player;
 
     public PlayerChallenges(ServerPlayerEntity player) {
@@ -51,7 +60,13 @@ public class PlayerChallenges {
         }
     }
 
-    public <T extends ObjectiveInstance> boolean trigger(ServerChallenge<T> challenge, int times) {
+    /**
+     * Triggers a challenge progress update, If the challenge is not done already.
+     * Sends a progress / completion notification to the player's client
+     * @param challenge The challenge that was progressed
+     * @param times The times it was done
+     */
+    public <T extends ObjectiveInstance> void trigger(ServerChallenge<T> challenge, int times) {
         for (ChallengeInstance i : challenges) {
             if (!i.isCompleted() && i.getChallenge().equals(challenge)) {
                 i.trigger(times);
@@ -61,10 +76,9 @@ public class PlayerChallenges {
                 } else {
                     sendPacket(PROGRESS_UPDATE,i);
                 }
-                return true;
+                return;
             }
         }
-        return false;
     }
 
     public ChallengeInstance get(Challenge<?> c) {
@@ -77,6 +91,12 @@ public class PlayerChallenges {
         ServerSidePacketRegistry.INSTANCE.sendToPlayer(player,id,buf);
     }
 
+    /**
+     * Updates the challenge progresses with a new challenge list.
+     * All challenges without a progress will create a new progress, and any challenge progress that is not present in the passed list will be removed.
+     * Will send an update to the player about the current challenges
+     * @param c The challenge list to update to
+     */
     public void update(List<ServerChallenge<?>> c) {
         for (ServerChallenge<?> ch : c) {
             ChallengeInstance i = get(ch);
@@ -116,6 +136,12 @@ public class PlayerChallenges {
         }
     }
 
+    /**
+     * Get the list of challenges a player has saved in memory, to retrieve it even when he's offline.
+     * @param uuid The player's UUID
+     * @param server The server
+     * @return A list of his challenge instances
+     */
     public static List<ChallengeInstance> getChallengesFor(UUID uuid, MinecraftServer server) {
         System.out.println("getting challenges: " + uuid);
         File dir = new File(server.getRunDirectory(),"challenges");
@@ -172,5 +198,6 @@ public class PlayerChallenges {
         challenges.forEach(c->{
             c.setCompleteCount(0);
         });
+
     }
 }

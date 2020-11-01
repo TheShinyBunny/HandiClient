@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.PlayerPredicate;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
@@ -33,11 +34,25 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * This class manages challenges on a server.
+ * It is saved to a file at /data/challenges.dat, containing the current season, the last timestamp a new challenge was revealed
+ * and the number of revealed challenges.
+ */
 public class ChallengesManager extends PersistentState {
 
+    /**
+     * The repository of all challenges in the current season
+     */
     private List<ChallengeBuilder<?>> challengeRepository = new ArrayList<>();
 
+    /**
+     * A list of currently available challenges. Only these challenges will be sent to the client and be completable.
+     */
     private List<ServerChallenge<?>> challenges;
+    /**
+     * The last unix timestamp a challenge was copied from the repository to the challenge list.
+     */
     private long lastRestockTime;
     private int season = 1;
 
@@ -97,10 +112,18 @@ public class ChallengesManager extends PersistentState {
 
     }
 
+    /**
+     * Retrieves the challenge manager instance of the passed world
+     * @param world The world that should contain the challenge manager. (Should ALWAYS be the {@link MinecraftServer#getOverworld() overworld}!
+     * @return An existing instance of the challenge manager, or a new one if it doesn't exist
+     */
     public static ChallengesManager get(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(ChallengesManager::new,"challenges");
     }
 
+    /**
+     * Called every server tick to update the available challenges if needed. A new challenge is added every IRL day, at 00:00.
+     */
     public void tick() {
         if (challenges.size() >= challengeRepository.size()) {
             if (season == CommonMod.SEASON) {
@@ -125,6 +148,9 @@ public class ChallengesManager extends PersistentState {
         }
     }
 
+    /**
+     * Makes a new challenge from the {@link #challengeRepository} available to complete by players
+     */
     public void restock() {
         if (challenges.size() >= challengeRepository.size()) return;
         ServerChallenge<?> challenge = challengeRepository.get(challenges.size()).create();
@@ -136,6 +162,9 @@ public class ChallengesManager extends PersistentState {
         markDirty();
     }
 
+    /**
+     * Updates the players on the server for an update in the available challenges
+     */
     public void updatePlayers() {
         for (PlayerEntity p : CommonMod.SERVER.get().getPlayerManager().getPlayerList()) {
             PlayerPersistentData.of(p).challenges.update(challenges);
@@ -176,14 +205,18 @@ public class ChallengesManager extends PersistentState {
         updatePlayers();
     }
 
+    /**
+     * Triggers an objective done by a player, to advance progress on any challenges that listen to it
+     * @param type The objective type that was triggered
+     * @param player The player triggering the objective
+     * @param predicate Matches the action done to a challenge with such requirements
+     * @param times The times the objective was done at once
+     */
     public <I extends ObjectiveInstance> void trigger(ObjectiveType<I> type, PlayerEntity player, Predicate predicate, int times) {
         for (ServerChallenge<?> c : challenges) {
             if (c.getObjective() == type && predicate.test(c.getData())) {
                 PlayerPersistentData.of(player).challenges.trigger(c,times);
             }
-            /*if (c.getObjective() == Objectives.COMPOSITE) {
-                Objectives.COMPOSITE.trigger(player,c,type,predicate,times);
-            }*/
         }
     }
 }
