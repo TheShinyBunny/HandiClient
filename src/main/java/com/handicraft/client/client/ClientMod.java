@@ -6,6 +6,8 @@ package com.handicraft.client.client;
 
 import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
+import com.handicraft.client.block.SpotifyBlock;
+import com.handicraft.client.block.entity.SpotifyBlockEntity;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
 import com.handicraft.client.client.entity.DarkBlazeRenderer;
@@ -14,6 +16,7 @@ import com.handicraft.client.client.entity.DarknessWizardRenderer;
 import com.handicraft.client.client.screen.*;
 import com.handicraft.client.collectibles.ClientCollectibleCache;
 import com.handicraft.client.collectibles.Emote;
+import com.handicraft.client.collectibles.Music;
 import com.handicraft.client.collectibles.PlayerCollectibles;
 import com.handicraft.client.emotes.ClientEmoteManager;
 import com.handicraft.client.emotes.EmoteManager;
@@ -39,6 +42,7 @@ import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -52,6 +56,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.resource.ResourceManager;
@@ -171,6 +176,21 @@ public class ClientMod implements ClientModInitializer {
                 ((CapeHolder)p).resetCape();
             }
         });
+
+        ClientSidePacketRegistry.INSTANCE.register(CommonMod.OPEN_SPOTIFY,(c,b)->{
+            BlockPos pos = b.readBlockPos();
+            CompoundTag tag = b.readCompoundTag();
+            c.getTaskQueue().execute(()->{
+                BlockEntity be = c.getPlayer().world.getBlockEntity(pos);
+                if (be instanceof SpotifyBlockEntity) {
+                    be.fromTag(c.getPlayer().world.getBlockState(pos),tag);
+                    MinecraftClient.getInstance().openScreen(new SpotifyScreen(((SpotifyBlockEntity) be)));
+                }
+            });
+        });
+
+        ClientSidePacketRegistry.INSTANCE.register(Music.START_PLAYING,Music::onPlay);
+        ClientSidePacketRegistry.INSTANCE.register(Music.UPDATE_MUSIC,Music::onUpdate);
 
         Identifier stillTexture = new Identifier("block/water_still");
         Identifier flowingTexture = new Identifier("block/water_flow");

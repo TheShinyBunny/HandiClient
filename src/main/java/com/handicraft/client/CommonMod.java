@@ -7,6 +7,7 @@ package com.handicraft.client;
 import com.handicraft.client.block.ColoredWaterBlock;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.block.entity.NetheriteFurnaceBlockEntity;
+import com.handicraft.client.block.entity.SpotifyBlockEntity;
 import com.handicraft.client.challenge.Challenge;
 import com.handicraft.client.challenge.ChallengesManager;
 import com.handicraft.client.challenge.PlayerChallenges;
@@ -81,6 +82,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.potion.Potion;
@@ -168,7 +170,9 @@ public class CommonMod implements ModInitializer {
 
     public static final TimeZone TIME_ZONE = TimeZone.getTimeZone(ZoneId.ofOffset("GMT", ZoneOffset.ofHours(3)));
     public static final RegistryKey<World> DARKNESS_KEY = RegistryKey.of(Registry.DIMENSION, new Identifier("handicraft:darkness"));
-
+    public static final BlockEntityType<SpotifyBlockEntity> SPOTIFY_BLOCK_ENTITY = BlockEntityType.Builder.create(SpotifyBlockEntity::new,ModBlocks.SPOTIFY_BLOCK).build(null);
+    public static final Identifier UPDATE_SPOTIFY = new Identifier("hcclient:update_spotify");
+    public static final Identifier OPEN_SPOTIFY = new Identifier("hcclient:open_spotify");
 
     public static float capeModifier() {
         return 42;
@@ -202,6 +206,7 @@ public class CommonMod implements ModInitializer {
         Registry.register(Registry.PARTICLE_TYPE,new Identifier("hcclient:herobrine_contrail"),HEROBRINE_TRAIL);
 
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:netherite_furnace"),NETHERITE_FURNACE_BLOCK_ENTITY_TYPE);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:spotify_block"),SPOTIFY_BLOCK_ENTITY);
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
@@ -239,6 +244,8 @@ public class CommonMod implements ModInitializer {
         });
 
         ServerSidePacketRegistry.INSTANCE.register(CHANGE_STORED_XP,XPStorageHelper::update);
+
+        ServerSidePacketRegistry.INSTANCE.register(UPDATE_SPOTIFY,SpotifyBlockEntity::updateFromPacket);
 
         ServerLifecycleEvents.SERVER_STARTED.register(SERVER::set);
 

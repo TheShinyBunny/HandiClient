@@ -134,6 +134,11 @@
   "commands.locker.doesnt_own": "You do not own the %s!",
   "commands.locker.select.unknown": "Unknown collectible '%s'!",
   "commands.locker.select": "Selected the %s!",
-  "commands.ping.response": "Your Ping: %dms"
+  "commands.ping.response": "Your Ping: %dms",
+
+  "spotify.volume": "Volume: %d",
+  "music.hcclient.jingle_bells": "Jingle Bells",
+  "music.hcclient.zombie": "Zombie",
+  "music.hcclient.ender_dragon_death": "Ender Dragon Death"
 
 }

@@ -10,6 +10,9 @@ import net.minecraft.util.Identifier;
 
 public class ModSounds {
 
+    @Register("hcclient:jingle_bells")
+    public static SoundEvent JINGLE_BELLS;
+
     @Register("hcclient:avatar_theme")
     public static SoundEvent AVATAR_THEME;
 

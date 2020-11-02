@@ -141,7 +141,7 @@ public class RecipeData implements DataProvider {
 
         woodType(consumer, ModItems.Tags.DARK_LOGS, DARK_LOG, STRIPPED_DARK_LOG, DARK_WOOD, STRIPPED_DARK_WOOD, DARK_PLANKS, DARK_SLAB, DARK_STAIRS, DARK_FENCE, DARK_FENCE_GATE, DARK_BUTTON, DARK_PRESSURE_PLATE);
 
-        SmithingRecipeJsonFactory.create(Ingredient.ofItems(NETHERITE_SWORD), Ingredient.ofItems(DARKNESS_STAR), DARKNESS_SWORD).criterion("has_dark_star",conditionsFromItem(DARKNESS_STAR)).offerTo(consumer,"darkness_sword");
+        //SmithingRecipeJsonFactory.create(Ingredient.ofItems(NETHERITE_SWORD), Ingredient.ofItems(DARKNESS_STAR), DARKNESS_SWORD).criterion("has_dark_star",conditionsFromItem(DARKNESS_STAR)).offerTo(consumer,"darkness_sword");
 
         ShapedRecipeJsonFactory.create(ModItems.GREEN_FIRE_TORCH,4).pattern("C").pattern("S").pattern("M").input('C',ItemTags.COALS).input('S',STICK).input('M',DARK_LEAVES).criterion("has_leaves",conditionsFromItem(DARK_LEAVES)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(ModItems.PURPLE_FIRE_TORCH,4).pattern("C").pattern("S").pattern("M").input('C',ItemTags.COALS).input('S',STICK).input('M',ModItems.Tags.DARK_STONES).criterion("has_stones",conditionsFromTag(ModItems.Tags.DARK_STONES)).offerTo(consumer);

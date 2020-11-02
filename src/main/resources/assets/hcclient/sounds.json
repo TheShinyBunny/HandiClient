@@ -1,4 +1,7 @@
 {
+  "jingle_bells": {
+    "sounds": ["hcclient:jingle_bells"]
+  },
   "spooky": {
     "sounds": [
       {

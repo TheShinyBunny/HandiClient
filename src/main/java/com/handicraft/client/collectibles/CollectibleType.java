@@ -14,11 +14,13 @@ import java.util.Map;
 
 public class CollectibleType<T extends Collectible> {
 
+
     private static final Map<String,CollectibleType<?>> types = new HashMap<>();
     private static final List<CollectibleType<?>> byIndex = new ArrayList<>();
 
     public static final CollectibleType<Cape> CAPE = new CollectibleType<>("cape");
     public static final CollectibleType<ParticleTrail> PARTICLE = new CollectibleType<>("particle");
+    public static final CollectibleType<Music> MUSIC = new CollectibleType<>("music");
     private final String id;
 
     public CollectibleType(String id) {

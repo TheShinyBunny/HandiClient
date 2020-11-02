@@ -185,6 +185,10 @@ public class ModBlocks {
     @BlockItem(CreativeTab.BLOCKS)
     public static final Block JACK_SOUL_LANTERN = new JackSoulLanternBlock();
 
+    @Register("spotify_block")
+    @BlockItem(CreativeTab.DECORATION)
+    public static final Block SPOTIFY_BLOCK = new SpotifyBlock();
+
     public static class Tags {
 
         public static final Tag.Identified<Block> DARK_LOGS = ModTags.block("dark_logs",DARK_LOG,DARK_WOOD,STRIPPED_DARK_LOG,STRIPPED_DARK_WOOD);
