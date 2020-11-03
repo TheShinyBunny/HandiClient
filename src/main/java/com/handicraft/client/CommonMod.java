@@ -7,11 +7,8 @@ package com.handicraft.client;
 import com.handicraft.client.block.ColoredWaterBlock;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.block.entity.NetheriteFurnaceBlockEntity;
-import com.handicraft.client.block.entity.SpotifyBlockEntity;
-import com.handicraft.client.challenge.Challenge;
+import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.ChallengesManager;
-import com.handicraft.client.challenge.PlayerChallenges;
-import com.handicraft.client.challenge.ServerChallenge;
 import com.handicraft.client.collectibles.*;
 import com.handicraft.client.commands.*;
 import com.handicraft.client.data.HandiDataGenerator;
@@ -31,15 +28,6 @@ import com.handicraft.client.rewards.*;
 import com.handicraft.client.screen.*;
 import com.handicraft.client.util.Register;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.DataFixerBuilder;
-import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
@@ -56,56 +44,39 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder;
-import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.fabricmc.fabric.api.util.NbtType;
-import net.fabricmc.fabric.impl.object.builder.FabricEntityType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.BlazeEntity;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.structure.StructurePieceType;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -117,9 +88,6 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 
 public class CommonMod implements ModInitializer {
 
@@ -165,14 +133,14 @@ public class CommonMod implements ModInitializer {
 
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
 
-    public static final int SEASON = 1;
-    public static final int VERSION = 3;
+    public static final int SEASON = 2;
+    public static final int VERSION = 4;
 
     public static final TimeZone TIME_ZONE = TimeZone.getTimeZone(ZoneId.ofOffset("GMT", ZoneOffset.ofHours(3)));
     public static final RegistryKey<World> DARKNESS_KEY = RegistryKey.of(Registry.DIMENSION, new Identifier("handicraft:darkness"));
-    public static final BlockEntityType<SpotifyBlockEntity> SPOTIFY_BLOCK_ENTITY = BlockEntityType.Builder.create(SpotifyBlockEntity::new,ModBlocks.SPOTIFY_BLOCK).build(null);
-    public static final Identifier UPDATE_SPOTIFY = new Identifier("hcclient:update_spotify");
-    public static final Identifier OPEN_SPOTIFY = new Identifier("hcclient:open_spotify");
+    public static final BlockEntityType<SpeakerBlockEntity> SPEAKER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create(SpeakerBlockEntity::new,ModBlocks.SPEAKER_BLOCK).build(null);
+    public static final Identifier UPDATE_SPEAKER = new Identifier("hcclient:update_speaker");
+    public static final Identifier OPEN_SPEAKER = new Identifier("hcclient:open_speaker");
 
     public static float capeModifier() {
         return 42;
@@ -206,7 +174,7 @@ public class CommonMod implements ModInitializer {
         Registry.register(Registry.PARTICLE_TYPE,new Identifier("hcclient:herobrine_contrail"),HEROBRINE_TRAIL);
 
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:netherite_furnace"),NETHERITE_FURNACE_BLOCK_ENTITY_TYPE);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:spotify_block"),SPOTIFY_BLOCK_ENTITY);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:speaker_block"), SPEAKER_BLOCK_ENTITY_TYPE);
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
@@ -245,7 +213,7 @@ public class CommonMod implements ModInitializer {
 
         ServerSidePacketRegistry.INSTANCE.register(CHANGE_STORED_XP,XPStorageHelper::update);
 
-        ServerSidePacketRegistry.INSTANCE.register(UPDATE_SPOTIFY,SpotifyBlockEntity::updateFromPacket);
+        ServerSidePacketRegistry.INSTANCE.register(UPDATE_SPEAKER, SpeakerBlockEntity::updateFromPacket);
 
         ServerLifecycleEvents.SERVER_STARTED.register(SERVER::set);
 

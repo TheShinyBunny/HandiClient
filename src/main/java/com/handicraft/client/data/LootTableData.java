@@ -148,7 +148,7 @@ public class LootTableData extends LootTablesProvider {
         dropSelf(consumer, DARK_OBSIDIAN);
         dropSelf(consumer, DARKNESS_BRICKS);
         dropSelf(consumer, JACK_SOUL_LANTERN);
-        dropSelf(consumer, SPOTIFY_BLOCK);
+        dropSelf(consumer, SPEAKER_BLOCK);
 
         consumer.accept(HALLOWEEN_CAKE,LootTable.builder());
         dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1, false);

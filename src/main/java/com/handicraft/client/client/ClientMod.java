@@ -6,8 +6,7 @@ package com.handicraft.client.client;
 
 import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
-import com.handicraft.client.block.SpotifyBlock;
-import com.handicraft.client.block.entity.SpotifyBlockEntity;
+import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
 import com.handicraft.client.client.entity.DarkBlazeRenderer;
@@ -50,7 +49,6 @@ import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.entity.IllusionerEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
@@ -177,14 +175,14 @@ public class ClientMod implements ClientModInitializer {
             }
         });
 
-        ClientSidePacketRegistry.INSTANCE.register(CommonMod.OPEN_SPOTIFY,(c,b)->{
+        ClientSidePacketRegistry.INSTANCE.register(CommonMod.OPEN_SPEAKER,(c, b)->{
             BlockPos pos = b.readBlockPos();
             CompoundTag tag = b.readCompoundTag();
             c.getTaskQueue().execute(()->{
                 BlockEntity be = c.getPlayer().world.getBlockEntity(pos);
-                if (be instanceof SpotifyBlockEntity) {
+                if (be instanceof SpeakerBlockEntity) {
                     be.fromTag(c.getPlayer().world.getBlockState(pos),tag);
-                    MinecraftClient.getInstance().openScreen(new SpotifyScreen(((SpotifyBlockEntity) be)));
+                    MinecraftClient.getInstance().openScreen(new SpeakerScreen(((SpeakerBlockEntity) be)));
                 }
             });
         });

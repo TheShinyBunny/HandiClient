@@ -68,7 +68,7 @@ public class ModBlocks {
 
     @Register("shadow_stone")
     @BlockItem(CreativeTab.BLOCKS)
-    public static final Block SHADOW_STONE = new Block(FabricBlockSettings.of(Material.STONE,MaterialColor.CLAY).breakByTool(FabricToolTags.PICKAXES).strength(1.5f,6f));
+    public static final Block SHADOW_STONE = new Block(FabricBlockSettings.of(Material.STONE,MaterialColor.GRAY).breakByTool(FabricToolTags.PICKAXES).strength(1.5f,6f));
 
     @Register("dark_ruby_block")
     @BlockItem(value = CreativeTab.BLOCKS)
@@ -185,9 +185,9 @@ public class ModBlocks {
     @BlockItem(CreativeTab.BLOCKS)
     public static final Block JACK_SOUL_LANTERN = new JackSoulLanternBlock();
 
-    @Register("spotify_block")
+    @Register("speaker_block")
     @BlockItem(CreativeTab.DECORATION)
-    public static final Block SPOTIFY_BLOCK = new SpotifyBlock();
+    public static final Block SPEAKER_BLOCK = new SpeakerBlock();
 
     public static class Tags {
 

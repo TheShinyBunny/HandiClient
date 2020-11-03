@@ -23,7 +23,6 @@ import net.minecraft.util.Identifier;
 
 public class NewGameMenuScreen extends Screen {
 
-    private static final Identifier HANDICRACK_LOGO = new Identifier("hcclient:textures/gui/handicrack.png");
     private int animationTime;
     private int dir;
 
@@ -103,9 +102,6 @@ public class NewGameMenuScreen extends Screen {
 
         textRenderer.draw(matrices,t,0,0,-1);
         matrices.pop();
-
-        client.getTextureManager().bindTexture(HANDICRACK_LOGO);
-        drawTexture(matrices,width - offset + 10,225,100,30,0,0,1357,451,1357,451);
 
         super.render(matrices, mouseX, mouseY, delta);
     }

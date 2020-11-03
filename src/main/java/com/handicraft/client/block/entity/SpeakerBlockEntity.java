@@ -5,8 +5,7 @@
 package com.handicraft.client.block.entity;
 
 import com.handicraft.client.CommonMod;
-import com.handicraft.client.block.SpotifyBlock;
-import com.handicraft.client.client.screen.SpotifyScreen;
+import com.handicraft.client.block.SpeakerBlock;
 import com.handicraft.client.collectibles.Collectible;
 import com.handicraft.client.collectibles.Collectibles;
 import com.handicraft.client.collectibles.Music;
@@ -18,33 +17,31 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.BlockView;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class SpotifyBlockEntity extends BlockEntity implements Tickable {
+public class SpeakerBlockEntity extends BlockEntity implements Tickable {
 
     private Set<PlayerEntity> trackedPlayers = new HashSet<>();
     private Music music;
     private float volume = 1.0f;
+    private boolean loop = false;
+    private double range = 8.0;
 
-    public SpotifyBlockEntity() {
-        super(CommonMod.SPOTIFY_BLOCK_ENTITY);
+    public SpeakerBlockEntity() {
+        super(CommonMod.SPEAKER_BLOCK_ENTITY_TYPE);
     }
 
     @Override
     public void tick() {
         if (!world.isClient && music != null) {
-            List<PlayerEntity> players = world.getNonSpectatingEntities(PlayerEntity.class, new Box(this.pos).expand(8));
+            List<PlayerEntity> players = world.getNonSpectatingEntities(PlayerEntity.class, new Box(this.pos).expand(range));
             trackedPlayers.removeIf(p -> {
                 if (!players.contains(p)) {
                     music.stop(p);
@@ -54,19 +51,18 @@ public class SpotifyBlockEntity extends BlockEntity implements Tickable {
             });
             for (PlayerEntity p : players) {
                 if (trackedPlayers.add(p)) {
-                    System.out.println("started playing");
-                    music.play(p,pos,getCachedState().get(SpotifyBlock.POWERED),volume);
+                    music.play(p,pos,loop,volume,range);
                 }
             }
         }
     }
 
-    public void loopStateUpdated(boolean looping) {
-        if (music != null) {
-            for (PlayerEntity p : trackedPlayers) {
-                music.update(p,looping,volume);
-            }
-        }
+    public double getRange() {
+        return range;
+    }
+
+    public boolean isLooping() {
+        return loop;
     }
 
     public Music getMusic() {
@@ -87,15 +83,17 @@ public class SpotifyBlockEntity extends BlockEntity implements Tickable {
             music = null;
         }
         float volume = buf.readFloat();
+        double range = buf.readDouble();
+        boolean loop = buf.readBoolean();
         ctx.getTaskQueue().execute(()->{
             BlockEntity be = ctx.getPlayer().world.getBlockEntity(pos);
-            if (be instanceof SpotifyBlockEntity) {
-                ((SpotifyBlockEntity) be).update(music,volume);
+            if (be instanceof SpeakerBlockEntity) {
+                ((SpeakerBlockEntity) be).update(music,volume,range,loop);
             }
         });
     }
 
-    private void update(Music music, float volume) {
+    private void update(Music music, float volume, double range, boolean loop) {
         if (this.music != music) {
             for (PlayerEntity p : trackedPlayers) {
                 this.music.stop(p);
@@ -103,9 +101,11 @@ public class SpotifyBlockEntity extends BlockEntity implements Tickable {
         }
         this.music = music;
         this.volume = volume;
+        this.range = range;
+        this.loop = loop;
         if (music != null) {
             for (PlayerEntity p : trackedPlayers) {
-                music.update(p,getCachedState().get(SpotifyBlock.POWERED),volume);
+                music.update(p,loop,volume,range);
             }
         } else {
             trackedPlayers.clear();
@@ -114,11 +114,23 @@ public class SpotifyBlockEntity extends BlockEntity implements Tickable {
     }
 
     @Override
+    public void markRemoved() {
+        super.markRemoved();
+        if (music != null) {
+            for (PlayerEntity p : trackedPlayers) {
+                music.stop(p);
+            }
+        }
+    }
+
+    @Override
     public CompoundTag toTag(CompoundTag tag) {
         if (music != null) {
             tag.putString("Music",Collectibles.REGISTRY.getId(music).toString());
         }
         tag.putFloat("Volume",volume);
+        tag.putDouble("Range",range);
+        tag.putBoolean("Loop",loop);
         return super.toTag(tag);
     }
 
@@ -128,13 +140,12 @@ public class SpotifyBlockEntity extends BlockEntity implements Tickable {
         if (tag.contains("Music", NbtType.STRING)) {
             Collectible c = Collectibles.REGISTRY.get(new Identifier(tag.getString("Music")));
             if (c instanceof Music) {
-                System.out.println("set music to " + c.getId());
                 this.music = ((Music) c);
-            } else {
-                System.out.println("no music");
             }
         }
         this.volume = tag.getFloat("Volume");
+        this.range = tag.getDouble("Range");
+        this.loop = tag.getBoolean("Loop");
     }
 
     public PacketByteBuf toPacket() {

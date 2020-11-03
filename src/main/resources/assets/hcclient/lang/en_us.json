@@ -136,7 +136,9 @@
   "commands.locker.select": "Selected the %s!",
   "commands.ping.response": "Your Ping: %dms",
 
-  "spotify.volume": "Volume: %d",
+  "speaker.volume": "Volume: %d",
+  "speaker.range": "Range: %d Blocks",
+  "speaker.loop": "Loop",
   "music.hcclient.jingle_bells": "Jingle Bells",
   "music.hcclient.zombie": "Zombie",
   "music.hcclient.ender_dragon_death": "Ender Dragon Death"
