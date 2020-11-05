@@ -91,6 +91,7 @@ public class ClientMod implements ClientModInitializer {
     public static final PlayedBoardHud PLAYED_BOARD = new PlayedBoardHud();
 
     private static final MultiplayerServerListPinger SERVER_LIST_PINGER = new MultiplayerServerListPinger();
+    public static boolean isAlwaysSnowing;
 
     public static void requestCape(UUID uuid) {
         if (MinecraftClient.getInstance().getNetworkHandler() != null) {

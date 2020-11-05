@@ -61,6 +61,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.*;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.potion.Potion;
 import net.minecraft.recipe.*;
@@ -141,6 +142,11 @@ public class CommonMod implements ModInitializer {
     public static final BlockEntityType<SpeakerBlockEntity> SPEAKER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create(SpeakerBlockEntity::new,ModBlocks.SPEAKER_BLOCK).build(null);
     public static final Identifier UPDATE_SPEAKER = new Identifier("hcclient:update_speaker");
     public static final Identifier OPEN_SPEAKER = new Identifier("hcclient:open_speaker");
+
+    public static final GameStateChangeS2CPacket.Reason ALWAYS_SNOW_CHANGED = new GameStateChangeS2CPacket.Reason(12);
+    public static final GameRules.Key<GameRules.BooleanRule> DO_ALWAYS_SNOW = GameRuleRegistry.register("doAlwaysSnow", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false, (server,b)->{
+        server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(ALWAYS_SNOW_CHANGED,b.get() ? 1 : 0));
+    }));
 
     public static float capeModifier() {
         return 42;
@@ -333,6 +339,7 @@ public class CommonMod implements ModInitializer {
         new LockerCommand().register(dispatcher);
         new PingCommand().register(dispatcher);
         new CanStructGenCommand().register(dispatcher);
+        new CollectiblesCommand().register(dispatcher);
     }
 
 

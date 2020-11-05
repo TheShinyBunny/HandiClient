@@ -43,13 +43,15 @@ public class LockerCommand implements CustomCommand {
                         player.sendMessage(msg,false);
                         for (Collectible c : collectibles.getOwned(t)) {
                             Reward r = Reward.getByCollectible(c);
-                            MutableText msg2 = new LiteralText("    " + r.getName());
-                            if (collectibles.getSelected(t) == c) {
-                                msg2.append(" [SELECTED]");
-                            } else {
-                                msg2.append(new LiteralText(" [SELECT]").formatted(Formatting.GREEN).styled(s->s.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/locker select " + c.getId().getPath()))));
+                            if (r != null) {
+                                MutableText msg2 = new LiteralText("    " + r.getName());
+                                if (collectibles.getSelected(t) == c) {
+                                    msg2.append(" [SELECTED]");
+                                } else {
+                                    msg2.append(new LiteralText(" [SELECT]").formatted(Formatting.GREEN).styled(s -> s.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/locker select " + c.getId().getPath()))));
+                                }
+                                player.sendMessage(msg2, false);
                             }
-                            player.sendMessage(msg2,false);
                         }
                     }
                     return 1;
