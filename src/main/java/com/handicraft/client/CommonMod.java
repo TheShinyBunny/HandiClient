@@ -6,9 +6,12 @@ package com.handicraft.client;
 
 import com.handicraft.client.block.ColoredWaterBlock;
 import com.handicraft.client.block.ModBlocks;
+import com.handicraft.client.block.entity.CashRegisterBlockEntity;
 import com.handicraft.client.block.entity.NetheriteFurnaceBlockEntity;
 import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.ChallengesManager;
+import com.handicraft.client.client.screen.CashRegisterOwnerScreen;
+import com.handicraft.client.client.screen.CashRegisterScreen;
 import com.handicraft.client.collectibles.*;
 import com.handicraft.client.commands.*;
 import com.handicraft.client.data.HandiDataGenerator;
@@ -26,6 +29,8 @@ import com.handicraft.client.item.CandySmeltingRecipe;
 import com.handicraft.client.item.ModItems;
 import com.handicraft.client.rewards.*;
 import com.handicraft.client.screen.*;
+import com.handicraft.client.screen.cash_register.CashRegisterOwnerHandler;
+import com.handicraft.client.screen.cash_register.CashRegisterScreenHandler;
 import com.handicraft.client.util.Register;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Pair;
@@ -46,6 +51,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityDimensions;
@@ -59,6 +65,7 @@ import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -70,6 +77,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
 import net.minecraft.util.registry.Registry;
@@ -147,6 +155,9 @@ public class CommonMod implements ModInitializer {
     public static final GameRules.Key<GameRules.BooleanRule> DO_ALWAYS_SNOW = GameRuleRegistry.register("doAlwaysSnow", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false, (server,b)->{
         server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(ALWAYS_SNOW_CHANGED,b.get() ? 1 : 0));
     }));
+    public static final BlockEntityType<CashRegisterBlockEntity> CASH_REGISTER_BLOCK_ENTITY = BlockEntityType.Builder.create(CashRegisterBlockEntity::new,ModBlocks.CASH_REGISTER).build(null);
+    public static final ScreenHandlerType<CashRegisterScreenHandler> CASH_REGISTER_SCREEN = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:cash_register"),(i, playerInventory, packetByteBuf) -> new CashRegisterScreenHandler(i,playerInventory,new SimpleInventory(54),packetByteBuf.readVarInt()));
+    public static final ScreenHandlerType<CashRegisterOwnerHandler> CASH_REGISTER_OWNER_SCREEN = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:cash_register_owner"),(i, playerInventory, packetByteBuf) -> new CashRegisterOwnerHandler(i,playerInventory,new SimpleInventory(54),packetByteBuf));
 
     public static float capeModifier() {
         return 42;
@@ -181,6 +192,7 @@ public class CommonMod implements ModInitializer {
 
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:netherite_furnace"),NETHERITE_FURNACE_BLOCK_ENTITY_TYPE);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:speaker_block"), SPEAKER_BLOCK_ENTITY_TYPE);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:cash_register"), CASH_REGISTER_BLOCK_ENTITY);
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
@@ -221,7 +233,21 @@ public class CommonMod implements ModInitializer {
 
         ServerSidePacketRegistry.INSTANCE.register(UPDATE_SPEAKER, SpeakerBlockEntity::updateFromPacket);
 
+        ServerSidePacketRegistry.INSTANCE.register(CashRegisterScreenHandler.ADMIN_LOGIN,((context, buffer) -> {
+            if (context.getPlayer().currentScreenHandler instanceof CashRegisterScreenHandler) {
+                ((CashRegisterScreenHandler) context.getPlayer().currentScreenHandler).tryLogin(context.getPlayer(),buffer.readString());
+            }
+        }));
+
+        ServerSidePacketRegistry.INSTANCE.register(CashRegisterOwnerHandler.UPDATE_COST,((context, buffer) -> {
+            if (context.getPlayer().currentScreenHandler instanceof CashRegisterOwnerHandler) {
+                ((CashRegisterOwnerHandler) context.getPlayer().currentScreenHandler).setCost(buffer.readVarInt());
+            }
+        }));
+
         ServerLifecycleEvents.SERVER_STARTED.register(SERVER::set);
+
+
 
         Reward.register(new Identifier("hcclient:spooky_disc"), new ItemReward("Spooky Music Disc", 1, 138, new ItemStack(ModItems.SPOOKY_MUSIC_DISC)));
         Reward.register(new Identifier("hcclient:barvazy_emote"), new EmoteReward("Barvazy Emote", 2, 89, EmoteManager.BARVAZY));
@@ -292,6 +318,7 @@ public class CommonMod implements ModInitializer {
             System.exit(0);
         }
 
+        //StateRefresher.INSTANCE.addBlockProperty(Blocks.OAK_LEAVES, Properties.SNOWY, false);
     }
 
     public <T> void registerAll(Class<?> container, Class<T> type, Registry<T> registry) {

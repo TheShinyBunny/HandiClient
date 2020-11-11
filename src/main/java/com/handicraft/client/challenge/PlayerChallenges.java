@@ -143,11 +143,9 @@ public class PlayerChallenges {
      * @return A list of his challenge instances
      */
     public static List<ChallengeInstance> getChallengesFor(UUID uuid, MinecraftServer server) {
-        System.out.println("getting challenges: " + uuid);
         File dir = new File(server.getRunDirectory(),"challenges");
         File f = new File(dir,uuid + ".dat");
         if (!f.exists()) {
-            System.out.println("file doesn't exist");
             return null;
         }
         try {

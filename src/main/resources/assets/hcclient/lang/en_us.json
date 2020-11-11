@@ -11,6 +11,13 @@
 
   "container.netherite_furnace": "Netherite Furnace",
   "container.candy_bucket": "Candy Bucket",
+  "container.cash_register.admin.label": "Admin Access",
+  "container.cash_register": "Cash Register",
+  "container.cash_register.admin.title": "Cash Register (Owner)",
+  "container.cash_register.invalid_password": "Invalid Password!",
+  "container.cash_register.password_empty": "Password is Empty",
+  "container.cash_register.password": "Password",
+  "container.cash_register.cost": "Price",
   "gui.item_claim.title": "Claim Your Reward:",
 
   "pause.back_to_game": "BACK TO GAME",

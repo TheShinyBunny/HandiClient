@@ -1,0 +1,17 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "block/dark_oak_leaves"
+      }
+    },
+    {
+      "when": {
+        "snowy": "true"
+      },
+      "apply": {
+        "model": "block/snowy_leaves"
+      }
+    }
+  ]
+}

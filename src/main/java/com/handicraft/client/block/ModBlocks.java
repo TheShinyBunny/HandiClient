@@ -43,7 +43,6 @@ public class ModBlocks {
     public static final Map<DyeColor,ColoredWaterBlock> COLORED_WATER_BLOCK_MAP = new HashMap<>();
 
     @Register("ruby_block")
-    @BlockItem(value = CreativeTab.BLOCKS)
     public static final Block RUBY_BLOCK = new Block(FabricBlockSettings.copyOf(Blocks.GOLD_BLOCK).breakByTool(FabricToolTags.PICKAXES,2));
 
     @Register("halloween_cake")
@@ -71,7 +70,6 @@ public class ModBlocks {
     public static final Block SHADOW_STONE = new Block(FabricBlockSettings.of(Material.STONE,MaterialColor.GRAY).breakByTool(FabricToolTags.PICKAXES).strength(1.5f,6f));
 
     @Register("dark_ruby_block")
-    @BlockItem(value = CreativeTab.BLOCKS)
     public static final Block DARK_RUBY_BLOCK = new Block(FabricBlockSettings.copyOf(Blocks.GOLD_BLOCK).breakByTool(FabricToolTags.PICKAXES,2));
 
     @Register("darkness_diamond_ore")
@@ -188,6 +186,10 @@ public class ModBlocks {
     @Register("speaker_block")
     @BlockItem(CreativeTab.DECORATION)
     public static final Block SPEAKER_BLOCK = new SpeakerBlock();
+
+    @Register("cash_register")
+    @BlockItem(CreativeTab.DECORATION)
+    public static final CashRegisterBlock CASH_REGISTER = new CashRegisterBlock();
 
     public static class Tags {
 

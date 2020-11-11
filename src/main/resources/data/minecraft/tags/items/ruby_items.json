@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:dark_ruby_block",
+    "minecraft:dark_ruby",
+    "minecraft:ruby_block",
+    "minecraft:ruby",
+    "minecraft:ruby_nugget"
+  ]
+}

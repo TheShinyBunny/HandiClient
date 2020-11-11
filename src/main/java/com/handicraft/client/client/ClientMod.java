@@ -24,6 +24,8 @@ import com.handicraft.client.fluid.ModFluids;
 import com.handicraft.client.particle.HerobrineContrail;
 import com.handicraft.client.particle.JackOContrailParticle;
 import com.handicraft.client.particle.RubyContrail;
+import com.handicraft.client.screen.cash_register.CashRegisterOwnerHandler;
+import com.handicraft.client.screen.cash_register.CashRegisterScreenHandler;
 import com.handicraft.client.util.CapeHolder;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
@@ -41,6 +43,7 @@ import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
@@ -114,6 +117,7 @@ public class ClientMod implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_TORCH, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GREEN_FIRE_WALL_TORCH, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_WALL_TORCH, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.OAK_LEAVES,RenderLayer.getCutout());
 
         ParticleFactoryRegistry.getInstance().register(CommonMod.JACK_O_CONTRAIL_PARTICLE, JackOContrailParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(CommonMod.RUBY_CONTRAIL, RubyContrail.Factory::new);
@@ -124,6 +128,8 @@ public class ClientMod implements ClientModInitializer {
         ScreenRegistry.register(CommonMod.NETHERITE_FURNACE_HANDLER_TYPE, NetheriteFurnaceScreen::new);
         ScreenRegistry.register(CommonMod.SHULKER_PREVIEW_SCREEN_HANDLER_TYPE, ShulkerPreviewScreen::new);
         ScreenRegistry.register(CommonMod.CANDY_BUCKET_HANDLER_TYPE, CandyBucketScreen::new);
+        ScreenRegistry.register(CommonMod.CASH_REGISTER_SCREEN, CashRegisterScreen::new);
+        ScreenRegistry.register(CommonMod.CASH_REGISTER_OWNER_SCREEN, CashRegisterOwnerScreen::new);
 
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARKNESS_WIZARD, ((dispatcher,ctx)->new DarknessWizardRenderer(dispatcher)));
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARK_BLAZE, (dispatcher,ctx)->new DarkBlazeRenderer(dispatcher));
@@ -190,6 +196,12 @@ public class ClientMod implements ClientModInitializer {
 
         ClientSidePacketRegistry.INSTANCE.register(Music.START_PLAYING,Music::onPlay);
         ClientSidePacketRegistry.INSTANCE.register(Music.UPDATE_MUSIC,Music::onUpdate);
+
+        ClientSidePacketRegistry.INSTANCE.register(CashRegisterScreenHandler.INVALID_PASSWORD,(context, buffer) -> {
+            if (MinecraftClient.getInstance().currentScreen instanceof CashRegisterScreen) {
+                ((CashRegisterScreen) MinecraftClient.getInstance().currentScreen).onInvalidPassword();
+            }
+        });
 
         Identifier stillTexture = new Identifier("block/water_still");
         Identifier flowingTexture = new Identifier("block/water_flow");

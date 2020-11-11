@@ -34,7 +34,6 @@ public class QueryResponsePacket_Extend {
     @Inject(method = "write",at = @At("TAIL"))
     private void write(PacketByteBuf buf, CallbackInfo ci) {
         if (metadata instanceof ExtendedServerMetadata) {
-            System.out.println("writing extra data to client");
             MinecraftServer server = CommonMod.SERVER.get();
             List<ChallengeInstance> challenges = PlayerChallenges.getChallengesFor(((ExtendedServerMetadata) metadata).getPlayer(),server);
             if (challenges == null) {

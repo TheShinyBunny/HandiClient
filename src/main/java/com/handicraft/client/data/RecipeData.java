@@ -133,8 +133,8 @@ public class RecipeData implements DataProvider {
         ShapedRecipeJsonFactory.create(HALLOWEEN_CAKE).pattern("PPP").pattern("SES").pattern("WWW").input('P', Ingredient.ofItems(Blocks.PUMPKIN,Blocks.CARVED_PUMPKIN)).input('S', SUGAR).input('E', EGG).input('W',WHEAT).criterion("has_pumpkin",conditionsFromTag(ModItems.Tags.PUMPKINS)).offerTo(consumer);
         surrounded(consumer, CANDY_BUCKET, BUCKET, CARVED_PUMPKIN);
         ShapedRecipeJsonFactory.create(TOMBSTONE).pattern(" C ").pattern("CCC").pattern("SSS").input('C',Ingredient.ofItems(STONE,COBBLESTONE)).input('S',Ingredient.fromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS)).criterion("has_soul_block",conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS)).offerTo(consumer);
-        compressedItem(consumer, RUBY_BLOCK, RUBY);
-        compressedItem(consumer, DARK_RUBY_BLOCK, DARK_RUBY);
+        compressedItem(consumer, ModItems.RUBY_BLOCK, RUBY);
+        compressedItem(consumer, ModItems.DARK_RUBY_BLOCK, DARK_RUBY);
         compressedItem(consumer, RUBY, RUBY_NUGGET);
         ShapedRecipeJsonFactory.create(NETHERITE_FURNACE).pattern("SSS").pattern("SFS").pattern("SNS").input('S',Blocks.SOUL_SOIL).input('F',Blocks.FURNACE).input('N', NETHERITE_INGOT).criterion("has_netherite",conditionsFromItem(NETHERITE_INGOT)).offerTo(consumer);
         surrounded(consumer, GOLDEN_BEETROOT, BEETROOT, GOLD_NUGGET);

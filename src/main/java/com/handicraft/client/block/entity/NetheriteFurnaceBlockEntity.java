@@ -437,7 +437,6 @@ public class NetheriteFurnaceBlockEntity extends LockableContainerBlockEntity im
         public void fromTag(CompoundTag tag) {
             if (tag.contains("Input",NbtType.COMPOUND)) {
                 input = ItemStack.fromTag(tag.getCompound("Input"));
-                System.out.println("read input: " + input);
             }
             if (tag.contains("Output",NbtType.COMPOUND)) {
                 output = ItemStack.fromTag(tag.getCompound("Output"));

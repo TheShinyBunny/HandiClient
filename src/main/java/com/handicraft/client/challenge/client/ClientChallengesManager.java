@@ -58,8 +58,6 @@ public class ClientChallengesManager {
         if (i == null) return;
         if (i.isCompleted()) {
             ChallengeToastHud.INSTANCE.add(i.getChallenge());
-        } else {
-            System.err.println("NOT ACTUALLY COMPLETED CHALLENGE!!");
         }
     }
 

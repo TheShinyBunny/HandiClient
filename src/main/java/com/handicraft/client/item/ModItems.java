@@ -8,6 +8,7 @@ import com.handicraft.client.ModSounds;
 import com.handicraft.client.ModTags;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.util.Register;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -33,7 +34,7 @@ public class ModItems {
     public static final CustomMusicDisc AVATAR_DISC = new CustomMusicDisc(1, ModSounds.AVATAR_THEME);
 
     @Register("ruby")
-    public static final Item RUBY = new Item(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON).fireproof());
+    public static final MoneyItem RUBY = new MoneyItem(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON).fireproof(),9);
 
     @Register("golden_beetroot")
     public static final Item GOLDEN_BEETROOT = new Item(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder().saturationModifier(1f).hunger(6).snack().alwaysEdible().statusEffect(new StatusEffectInstance(StatusEffects.HASTE,20 * 90,1),1f).build()));
@@ -42,13 +43,13 @@ public class ModItems {
     public static final CandyItem CANDY = new CandyItem();
 
     @Register("dark_ruby")
-    public static final Item DARK_RUBY = new Item(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.EPIC).fireproof());
+    public static final MoneyItem DARK_RUBY = new MoneyItem(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.EPIC).fireproof(),100);
 
     @Register("candy_bucket")
     public static final Item CANDY_BUCKET = new CandyBucketItem();
 
     @Register("ruby_nugget")
-    public static final Item RUBY_NUGGET = new Item(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON));
+    public static final Item RUBY_NUGGET = new MoneyItem(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON),1);
 
     @Register("green_fire_torch")
     public static final Item GREEN_FIRE_TORCH = new WallStandingBlockItem(ModBlocks.GREEN_FIRE_TORCH,ModBlocks.GREEN_FIRE_WALL_TORCH,new Item.Settings().group(ItemGroup.DECORATIONS));
@@ -59,11 +60,22 @@ public class ModItems {
     @Register("darkness_axe")
     public static final Item DARKNESS_AXE = new DarknessAxeItem();
 
+    @Register("cash_register_key")
+    public static final Item CASH_REGISTER_KEY = new Item(new FabricItemSettings().group(ItemGroup.MISC).fireproof().maxCount(1));
+
+    @Register("ruby_block")
+    public static final Item RUBY_BLOCK = new MoneyBlockItem(ModBlocks.RUBY_BLOCK,RUBY,new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).rarity(Rarity.UNCOMMON).fireproof());
+
+    @Register("dark_ruby_block")
+    public static final Item DARK_RUBY_BLOCK = new MoneyBlockItem(ModBlocks.DARK_RUBY_BLOCK,DARK_RUBY,new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).rarity(Rarity.EPIC).fireproof());
+
+
     public static class Tags {
 
         public static final Tag.Identified<Item> DARK_LOGS = ModTags.item("dark_logs", ModBlocks.DARK_LOG, ModBlocks.DARK_WOOD, ModBlocks.STRIPPED_DARK_LOG, ModBlocks.STRIPPED_DARK_WOOD);
 
         public static final Tag.Identified<Item> PUMPKINS = ModTags.item("pumpkins", Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN);
         public static final Tag.Identified<Item> DARK_STONES = ModTags.item("dark_stones", ModBlocks.DARK_STONE, ModBlocks.SHADOW_STONE);
+        public static final Tag.Identified<Item> MONEY = ModTags.item("ruby_items", ModItems.DARK_RUBY_BLOCK, ModItems.DARK_RUBY, ModItems.RUBY_BLOCK, ModItems.RUBY, ModItems.RUBY_NUGGET);
     }
 }
