@@ -1,5 +1,7 @@
 package com.handicraft.client.mixin;
 
+import com.handicraft.client.screen.EnderChestScreenHandler;
+import com.handicraft.client.screen.PreviewScreen;
 import com.handicraft.client.screen.ShulkerPreviewScreenHandler;
 import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -17,9 +19,10 @@ public class ServerPlayNetworkHandler_CloseShulker {
 
     @Inject(method = "onGuiClose",at = @At("HEAD"),cancellable = true)
     private void onGuiClose(GuiCloseC2SPacket packet, CallbackInfo ci) {
-        if (player.currentScreenHandler instanceof ShulkerPreviewScreenHandler) {
+        if (player.currentScreenHandler instanceof PreviewScreen && ((PreviewScreen) player.currentScreenHandler).shouldOverrideClosing()) {
             ci.cancel();
             player.currentScreenHandler.close(player);
+            ((PreviewScreen) player.currentScreenHandler).returnToPrevious(player);
         }
     }
 

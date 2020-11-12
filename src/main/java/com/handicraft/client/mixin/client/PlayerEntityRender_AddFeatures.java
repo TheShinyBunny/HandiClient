@@ -4,6 +4,7 @@
 
 package com.handicraft.client.mixin.client;
 
+import com.handicraft.client.client.hats.HatFeatureRenderer;
 import com.handicraft.client.emotes.EmoteManager;
 import com.handicraft.client.emotes.EmoteRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -26,10 +27,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntityRenderer.class)
-public abstract class PlayerEntityRender_AddEmotesFeature extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
+public abstract class PlayerEntityRender_AddFeatures extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
 
-    public PlayerEntityRender_AddEmotesFeature(EntityRenderDispatcher dispatcher, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
+    public PlayerEntityRender_AddFeatures(EntityRenderDispatcher dispatcher, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(dispatcher, model, shadowRadius);
+    }
+
+    @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRenderDispatcher;Z)V",at = @At("TAIL"))
+    private void registerFeatures(EntityRenderDispatcher dispatcher, boolean bl, CallbackInfo ci) {
+        addFeature(new HatFeatureRenderer(this));
     }
 
     @Inject(method = "render",at = @At("TAIL"))

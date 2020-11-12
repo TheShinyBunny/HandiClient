@@ -20,16 +20,20 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
-public class EnderChestScreenHandler extends ScreenHandler {
+public class EnderChestScreenHandler extends ScreenHandler implements PreviewScreen {
 
     private final PlayerEntity player;
+    private final Text prevScreenTitle;
+    private final ScreenHandler prevScreen;
     private EnderChestInventory inventory;
     private int storedXP;
 
-    public EnderChestScreenHandler(int syncId, PlayerInventory playerInventory, EnderChestInventory inventory, int storedXP) {
+    public EnderChestScreenHandler(int syncId, PlayerInventory playerInventory, EnderChestInventory inventory, int storedXP, Text prevScreenTitle, ScreenHandler prevScreen) {
         super(CommonMod.ENDER_CHEST_HANDLER_TYPE, syncId);
         this.storedXP = storedXP;
         this.player = playerInventory.player;
+        this.prevScreenTitle = prevScreenTitle;
+        this.prevScreen = prevScreen;
         checkSize(inventory, 27);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
@@ -54,7 +58,7 @@ public class EnderChestScreenHandler extends ScreenHandler {
         }
     }
 
-    public static NamedScreenHandlerFactory create() {
+    public static NamedScreenHandlerFactory create(Text prevScreenTitle, ScreenHandler prevScreen) {
         return new ExtendedScreenHandlerFactory(){
             @Override
             public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
@@ -68,9 +72,29 @@ public class EnderChestScreenHandler extends ScreenHandler {
 
             @Override
             public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new EnderChestScreenHandler(syncId, inv, player.getEnderChestInventory(), PlayerPersistentData.of(player).storedXP);
+                return new EnderChestScreenHandler(syncId, inv, player.getEnderChestInventory(), PlayerPersistentData.of(player).storedXP, prevScreenTitle, prevScreen);
             }
         };
+    }
+
+    @Override
+    public boolean shouldOverrideClosing() {
+        return prevScreen != null && prevScreenTitle != null;
+    }
+
+    @Override
+    public ScreenHandler getPreviousScreen() {
+        return prevScreen;
+    }
+
+    @Override
+    public Text getPreviousScreenTitle() {
+        return prevScreenTitle;
+    }
+
+    @Override
+    public void onPreviewClosed(PlayerEntity player) {
+
     }
 
     @Override

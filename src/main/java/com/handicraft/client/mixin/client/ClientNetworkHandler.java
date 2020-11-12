@@ -5,11 +5,14 @@
 package com.handicraft.client.mixin.client;
 
 import com.handicraft.client.CommonMod;
+import com.handicraft.client.block.entity.CauldronBlockEntity;
 import com.handicraft.client.client.ClientMod;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -40,6 +43,14 @@ public class ClientNetworkHandler {
     private void onGameState(GameStateChangeS2CPacket packet, CallbackInfo ci) {
         if (packet.getReason() == CommonMod.ALWAYS_SNOW_CHANGED) {
             ClientMod.isAlwaysSnowing = packet.getValue() == 1;
+        }
+    }
+
+    @Inject(method = "onBlockEntityUpdate",at = @At("TAIL"))
+    private void blockEntityUpdate(BlockEntityUpdateS2CPacket packet, CallbackInfo ci) {
+        BlockEntity be = client.world.getBlockEntity(packet.getPos());
+        if (packet.getBlockEntityType() == 100 && be instanceof CauldronBlockEntity) {
+            be.fromTag(client.world.getBlockState(packet.getPos()),packet.getCompoundTag());
         }
     }
 

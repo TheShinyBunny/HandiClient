@@ -5,7 +5,9 @@
 package com.handicraft.client.mixin;
 
 import com.handicraft.client.CommonMod;
+import com.handicraft.client.screen.EnderChestScreenHandler;
 import com.handicraft.client.screen.ShulkerPreviewScreenHandler;
+import com.handicraft.client.screen.cash_register.AbstractCashRegisterScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
@@ -15,6 +17,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -43,6 +46,9 @@ public class ScreenHandler_ShulkerBoxHelper {
         Slot slot = this.slots.get(slotId);
         ItemStack stack = slot.getStack();
         ItemStack cursor = playerEntity.inventory.getCursorStack();
+        if ((Object)this instanceof AbstractCashRegisterScreenHandler && !(slot.inventory instanceof PlayerInventory)) {
+            return;
+        }
         if (Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock && !cursor.isEmpty() && !(Block.getBlockFromItem(cursor.getItem()) instanceof ShulkerBoxBlock)) {
             ItemStack prev = stack.copy();
             CompoundTag tag = stack.getOrCreateSubTag("BlockEntityTag");
@@ -109,8 +115,8 @@ public class ScreenHandler_ShulkerBoxHelper {
                     return;
                 }
             }
-
         }
+        if ((Object)this instanceof AbstractCashRegisterScreenHandler && !(slot.inventory instanceof PlayerInventory)) return;
         if (slotActionType == SlotActionType.PICKUP_ALL) {
             ItemStack cursor = playerEntity.inventory.getCursorStack();
             if (Block.getBlockFromItem(cursor.getItem()) instanceof ShulkerBoxBlock) {
@@ -135,6 +141,22 @@ public class ScreenHandler_ShulkerBoxHelper {
                 }
                 slot.setStack(cursor);
                 playerEntity.openHandledScreen(ShulkerPreviewScreenHandler.createFactory(inventory,slotInPlayer,cursor.getName(),playerEntity.currentScreenHandler,title,slotId));
+
+                cir.setReturnValue(ItemStack.EMPTY);
+            } else if (cursor.getItem() == Items.ENDER_CHEST) {
+                Text title;
+                if (playerEntity.world.isClient) {
+                    title = CommonMod.getCurrentWindowTitle();
+                } else {
+                    title = CommonMod.currentTitles.get(playerEntity);
+                    ((ScreenHandlerAccessor)playerEntity.currentScreenHandler).getListeners().remove((ServerPlayerEntity)playerEntity);
+                }
+                playerEntity.inventory.setCursorStack(ItemStack.EMPTY);
+                if (slot.hasStack()) {
+                    playerEntity.dropItem(slot.getStack(),false);
+                }
+                slot.setStack(cursor);
+                playerEntity.openHandledScreen(EnderChestScreenHandler.create(title,playerEntity.currentScreenHandler));
 
                 cir.setReturnValue(ItemStack.EMPTY);
             }

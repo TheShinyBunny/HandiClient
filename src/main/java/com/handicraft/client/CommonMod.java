@@ -7,11 +7,10 @@ package com.handicraft.client;
 import com.handicraft.client.block.ColoredWaterBlock;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.block.entity.CashRegisterBlockEntity;
+import com.handicraft.client.block.entity.CauldronBlockEntity;
 import com.handicraft.client.block.entity.NetheriteFurnaceBlockEntity;
 import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.ChallengesManager;
-import com.handicraft.client.client.screen.CashRegisterOwnerScreen;
-import com.handicraft.client.client.screen.CashRegisterScreen;
 import com.handicraft.client.collectibles.*;
 import com.handicraft.client.commands.*;
 import com.handicraft.client.data.HandiDataGenerator;
@@ -50,9 +49,13 @@ import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
+import net.minecraft.block.dispenser.DispenserBehavior;
+import net.minecraft.block.dispenser.FallibleItemDispenserBehavior;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -71,15 +74,22 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.recipe.*;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.*;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPointer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -114,7 +124,7 @@ public class CommonMod implements ModInitializer {
 
     public static final ScreenHandlerType<EnderChestScreenHandler> ENDER_CHEST_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:enderchest"),(i, playerInventory, packetByteBuf) -> {
         int stored = packetByteBuf.readVarInt();
-        return new EnderChestScreenHandler(i,playerInventory,new EnderChestInventory(),stored);
+        return new EnderChestScreenHandler(i,playerInventory,new EnderChestInventory(),stored, null, null);
     });
 
     public static final BlockEntityType<NetheriteFurnaceBlockEntity> NETHERITE_FURNACE_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create(NetheriteFurnaceBlockEntity::new, ModBlocks.NETHERITE_FURNACE).build(null);
@@ -158,10 +168,7 @@ public class CommonMod implements ModInitializer {
     public static final BlockEntityType<CashRegisterBlockEntity> CASH_REGISTER_BLOCK_ENTITY = BlockEntityType.Builder.create(CashRegisterBlockEntity::new,ModBlocks.CASH_REGISTER).build(null);
     public static final ScreenHandlerType<CashRegisterScreenHandler> CASH_REGISTER_SCREEN = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:cash_register"),(i, playerInventory, packetByteBuf) -> new CashRegisterScreenHandler(i,playerInventory,new SimpleInventory(54),packetByteBuf.readVarInt()));
     public static final ScreenHandlerType<CashRegisterOwnerHandler> CASH_REGISTER_OWNER_SCREEN = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:cash_register_owner"),(i, playerInventory, packetByteBuf) -> new CashRegisterOwnerHandler(i,playerInventory,new SimpleInventory(54),packetByteBuf));
-
-    public static float capeModifier() {
-        return 42;
-    }
+    public static final BlockEntityType<CauldronBlockEntity> CAULDRON_BLOCK_ENTITY = BlockEntityType.Builder.create(CauldronBlockEntity::new, Blocks.CAULDRON).build(null);
 
     public static Text getCurrentWindowTitle() {
         return Objects.requireNonNull(MinecraftClient.getInstance().currentScreen).getTitle();
@@ -193,6 +200,7 @@ public class CommonMod implements ModInitializer {
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:netherite_furnace"),NETHERITE_FURNACE_BLOCK_ENTITY_TYPE);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:speaker_block"), SPEAKER_BLOCK_ENTITY_TYPE);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:cash_register"), CASH_REGISTER_BLOCK_ENTITY);
+        Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("minecraft:cauldron"), CAULDRON_BLOCK_ENTITY);
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
@@ -313,6 +321,86 @@ public class CommonMod implements ModInitializer {
             PlayerCollectibles.of((ServerPlayerEntity) ctx.getPlayer()).select(ctx.getPlayer(),type,c);
         });
 
+
+        DispenserBlock.registerBehavior(Items.POTION, new FallibleItemDispenserBehavior() {
+            @Override
+            protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                BlockPos pos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                BlockState state = pointer.getWorld().getBlockState(pos);
+                if (state.isOf(Blocks.CAULDRON)) {
+                    CauldronBlockEntity be = (CauldronBlockEntity) pointer.getWorld().getBlockEntity(pos);
+                    int level = state.get(CauldronBlock.LEVEL);
+                    Potion potion = PotionUtil.getPotion(stack);
+                    if (level < 3 && (level == 0 || be.canFillWith(potion))) {
+                        pointer.getWorld().setBlockState(pos,state.with(CauldronBlock.LEVEL,level + 1),2);
+                        pointer.getWorld().updateComparators(pos,Blocks.CAULDRON);
+
+                        be.setPotion(potion);
+
+                        setSuccess(true);
+                        stack.decrement(1);
+                        if (stack.isEmpty()) {
+                            return new ItemStack(Items.GLASS_BOTTLE);
+                        }
+                    } else {
+                        setSuccess(false);
+                    }
+                    return stack;
+                } else {
+                    setSuccess(true);
+                    return super.dispenseSilently(pointer, stack);
+                }
+            }
+        });
+
+
+        DispenserBlock.registerBehavior(Items.GLASS_BOTTLE, new FallibleItemDispenserBehavior() {
+
+            private DispenserBehavior defaultBehavior = new ItemDispenserBehavior();
+
+            private ItemStack fillBottle(BlockPointer blockPointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
+                emptyBottleStack.decrement(1);
+                if (emptyBottleStack.isEmpty()) {
+                    return filledBottleStack.copy();
+                } else {
+                    if (((DispenserBlockEntity)blockPointer.getBlockEntity()).addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
+                        this.defaultBehavior.dispense(blockPointer, filledBottleStack.copy());
+                    }
+
+                    return emptyBottleStack;
+                }
+            }
+
+            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                this.setSuccess(false);
+                ServerWorld serverWorld = pointer.getWorld();
+                BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                BlockState blockState = serverWorld.getBlockState(blockPos);
+                if (blockState.isOf(Blocks.CAULDRON) && blockState.get(CauldronBlock.LEVEL) > 0) {
+                    CauldronBlockEntity be = (CauldronBlockEntity) serverWorld.getBlockEntity(blockPos);
+                    Potion potion = be.getPotion();
+                    int level = blockState.get(CauldronBlock.LEVEL);
+                    if (level == 1) {
+                        be.setPotion(Potions.WATER);
+                        be.setWaterColor(null);
+                    }
+                    serverWorld.setBlockState(blockPos,blockState.with(CauldronBlock.LEVEL,level - 1),2);
+                    setSuccess(true);
+                    return fillBottle(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION),potion));
+                } else if (blockState.method_27851(BlockTags.BEEHIVES, (state) -> state.contains(BeehiveBlock.HONEY_LEVEL)) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+                    ((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+                    this.setSuccess(true);
+                    return this.fillBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
+                } else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+                    this.setSuccess(true);
+                    return this.fillBottle(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
+                } else {
+                    return super.dispenseSilently(pointer, stack);
+                }
+            }
+        });
+
+
         if (FabricLoader.getInstance().isDevelopmentEnvironment() && "true".equalsIgnoreCase(System.getProperty("data"))) {
             HandiDataGenerator.run();
             System.exit(0);
@@ -365,7 +453,6 @@ public class CommonMod implements ModInitializer {
         new HandipassCommand().register(dispatcher);
         new LockerCommand().register(dispatcher);
         new PingCommand().register(dispatcher);
-        new CanStructGenCommand().register(dispatcher);
         new CollectiblesCommand().register(dispatcher);
     }
 

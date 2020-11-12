@@ -21,9 +21,9 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ShulkerPreviewScreenHandler extends ScreenHandler {
+public class ShulkerPreviewScreenHandler extends ScreenHandler implements PreviewScreen {
     private final Inventory inventory;
-    private final int slotInPlayer;
+    public final int slotInPlayer;
     private final ScreenHandler prev;
     private final Text prevTitle;
     private final int shulkerSlot;
@@ -85,69 +85,7 @@ public class ShulkerPreviewScreenHandler extends ScreenHandler {
         return slotInPlayer;
     }
 
-    @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
-        if (!player.world.isClient) {
-            Slot slot = prev.getSlot(shulkerSlot);
-            ItemStack stack = slot.getStack();
-            DefaultedList<ItemStack> stacks = DefaultedList.ofSize(27, ItemStack.EMPTY);
-            for (int i = 0; i < 27; i++) {
-                Slot s = slots.get(i);
-                stacks.set(i, s.getStack());
-            }
-            Inventories.toTag(stack.getOrCreateSubTag("BlockEntityTag"), stacks);
 
-            slot.setStack(stack);
-
-            player.currentScreenHandler = player.playerScreenHandler;
-            if (!(prev instanceof PlayerScreenHandler)) {
-                ((ServerPlayerEntityAccessor) player).setScreenHandlerSyncId(prev.syncId - 1);
-                if (prev.getType() instanceof ExtendedScreenHandlerType) {
-                    if (prev instanceof ShulkerPreviewScreenHandler) {
-                        player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-                            @Override
-                            public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
-                                packetByteBuf.writeVarInt(((ShulkerPreviewScreenHandler) prev).slotInPlayer);
-                            }
-
-                            @Override
-                            public Text getDisplayName() {
-                                return prevTitle;
-                            }
-
-                            @Override
-                            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                                Set<Inventory> invs = new HashSet<>();
-                                for (Slot s : prev.slots) {
-                                    if (s.inventory != inv) {
-                                        invs.add(s.inventory);
-                                    }
-                                }
-                                invs.forEach(i -> i.onOpen(player));
-                                return prev;
-                            }
-                        });
-                    } /*else if (prev instanceof EnderChestScreenHandler) {
-                        player.openHandledScreen(EnderChestScreenHandler.create());
-                    }*/
-                } else {
-                    player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, player1) -> {
-                        Set<Inventory> invs = new HashSet<>();
-                        for (Slot s : prev.slots) {
-                            if (s.inventory != inv) {
-                                invs.add(s.inventory);
-                            }
-                        }
-                        invs.forEach(i -> i.onOpen(player));
-                        return prev;
-                    }, prevTitle));
-                }
-            } else {
-                player.currentScreenHandler.addListener((ScreenHandlerListener) player);
-            }
-        }
-    }
 
     @Override
     public boolean canUse(PlayerEntity player) {
@@ -177,5 +115,34 @@ public class ShulkerPreviewScreenHandler extends ScreenHandler {
         }
 
         return itemStack;
+    }
+
+    @Override
+    public boolean shouldOverrideClosing() {
+        return true;
+    }
+
+    @Override
+    public ScreenHandler getPreviousScreen() {
+        return prev;
+    }
+
+    @Override
+    public Text getPreviousScreenTitle() {
+        return prevTitle;
+    }
+
+    @Override
+    public void onPreviewClosed(PlayerEntity player) {
+        Slot slot = prev.getSlot(shulkerSlot);
+        ItemStack stack = slot.getStack();
+        DefaultedList<ItemStack> stacks = DefaultedList.ofSize(27, ItemStack.EMPTY);
+        for (int i = 0; i < 27; i++) {
+            Slot s = slots.get(i);
+            stacks.set(i, s.getStack());
+        }
+        Inventories.toTag(stack.getOrCreateSubTag("BlockEntityTag"), stacks);
+
+        slot.setStack(stack);
     }
 }

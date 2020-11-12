@@ -6,6 +6,7 @@ package com.handicraft.client.client;
 
 import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.ModBlocks;
+import com.handicraft.client.block.entity.CauldronBlockEntity;
 import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
@@ -38,6 +39,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -46,6 +48,7 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.MultiplayerServerListPinger;
@@ -60,6 +63,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Style;
@@ -258,6 +262,21 @@ public class ClientMod implements ClientModInitializer {
                 }
             });
         }
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            if (world == null || pos == null) return -1;
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof CauldronBlockEntity) {
+                if (((CauldronBlockEntity) be).isDefaultPotion()) {
+                    if (((CauldronBlockEntity) be).getWaterColor() != null) {
+                        DyeColor color = ((CauldronBlockEntity) be).getWaterColor();
+                        return WaterColorRenderer.COLOR_MAP.get(color);
+                    }
+                } else {
+                    return PotionUtil.getColor(((CauldronBlockEntity) be).getPotion());
+                }
+            }
+            return BiomeColors.getWaterColor(world,pos);
+        },Blocks.CAULDRON);
 
 
     }
