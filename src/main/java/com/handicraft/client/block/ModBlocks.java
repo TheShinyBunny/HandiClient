@@ -9,6 +9,7 @@ import com.handicraft.client.block.sapling.DarkSaplingGenerator;
 import com.handicraft.client.util.BlockItem;
 import com.handicraft.client.util.CreativeTab;
 import com.handicraft.client.util.Register;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.*;
@@ -191,11 +192,40 @@ public class ModBlocks {
     @BlockItem(CreativeTab.DECORATION)
     public static final CashRegisterBlock CASH_REGISTER = new CashRegisterBlock();
 
+    @Register("dirt_slab")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final SlabBlock DIRT_SLAB = new SlabBlock(FabricBlockSettings.of(Material.SOIL,MaterialColor.DIRT).strength(0.5f).breakByTool(FabricToolTags.SHOVELS).sounds(BlockSoundGroup.GRAVEL));
+
+    @Register("grass_block_slab")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final SlabBlock GRASS_BLOCK_SLAB = new GrassBlockSlab(FabricBlockSettings.of(Material.SOLID_ORGANIC).strength(0.6f).breakByTool(FabricToolTags.SHOVELS).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS));
+
+    @Register("frozen_stone")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block FROZEN_STONE = new Block(FabricBlockSettings.copy(Blocks.STONE).slipperiness(0.95f));
+
+    @Register("frozen_stone_bricks")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block FROZEN_STONE_BRICKS = new Block(FabricBlockSettings.copy(Blocks.STONE_BRICKS).slipperiness(0.95f));
+
+    @Register("shadow_stone_stairs")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final StairsBlock SHADOW_STONE_STAIRS = new CustomStairsBlock(SHADOW_STONE.getDefaultState(),FabricBlockSettings.copy(Blocks.STONE_STAIRS));
+
+    @Register("shadow_stone_slab")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final SlabBlock SHADOW_STONE_SLAB = new SlabBlock(FabricBlockSettings.copy(Blocks.STONE_SLAB));
+
+    @Register("shadow_stone_bricks")
+    @BlockItem(CreativeTab.BLOCKS)
+    public static final Block SHADOW_STONE_BRICKS = new Block(FabricBlockSettings.copy(Blocks.STONE_BRICKS));
+
+
     public static class Tags {
 
         public static final Tag.Identified<Block> DARK_LOGS = ModTags.block("dark_logs",DARK_LOG,DARK_WOOD,STRIPPED_DARK_LOG,STRIPPED_DARK_WOOD);
 
-        public static final Tag.Identified<Block> DARK_STONES = ModTags.block("dark_stones",DARK_STONE,SHADOW_STONE);
+        public static final Tag.Identified<Block> DARK_STONES = ModTags.block("dark_stones",DARK_STONE,SHADOW_STONE,SHADOW_STONE_BRICKS);
 
         public static final Tag.Identified<Block> GREEN_FLAMMABLES = ModTags.block("green_flammables",DARK_LEAVES,DARKNESS_BRICKS);
 

@@ -5,6 +5,7 @@
 package com.handicraft.client.block.entity;
 
 import com.handicraft.client.CommonMod;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +16,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class CauldronBlockEntity extends BlockEntity {
+public class CauldronBlockEntity extends BlockEntity implements BlockEntityClientSerializable {
 
     private Potion potion;
     private DyeColor waterColor;
@@ -52,13 +53,11 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return toTag(new CompoundTag());
-    }
-
-    @Override
-    public @Nullable BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(pos,100,toInitialChunkDataTag());
+    public void markDirty() {
+        super.markDirty();
+        if (!world.isClient) {
+            sync();
+        }
     }
 
     @Override
@@ -78,5 +77,15 @@ public class CauldronBlockEntity extends BlockEntity {
         if (tag.contains("Color") && tag.getInt("Color") >= 0) {
             waterColor = DyeColor.byId(tag.getInt("Color"));
         }
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag compoundTag) {
+        fromTag(getCachedState(),compoundTag);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag compoundTag) {
+        return toTag(compoundTag);
     }
 }

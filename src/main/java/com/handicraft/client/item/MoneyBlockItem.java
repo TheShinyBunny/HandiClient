@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 
 public class MoneyBlockItem extends BlockItem implements MoneyLike {
+
     private MoneyLike base;
 
     public MoneyBlockItem(Block block, MoneyLike base, Settings settings) {
@@ -18,5 +19,10 @@ public class MoneyBlockItem extends BlockItem implements MoneyLike {
     @Override
     public int getRubyValue() {
         return base.getRubyValue() * 9;
+    }
+
+    @Override
+    public boolean canPurchase() {
+        return false;
     }
 }

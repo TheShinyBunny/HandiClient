@@ -8,6 +8,7 @@ import com.handicraft.client.CommonMod;
 import com.handicraft.client.block.entity.CashRegisterBlockEntity;
 import com.handicraft.client.item.ModItems;
 import com.handicraft.client.item.MoneyLike;
+import com.handicraft.client.mixin.SimpleInventoryAccessor;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -36,19 +37,15 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
     public static final Identifier ADMIN_LOGIN = new Identifier("hcclient:register_admin_login");
     public static final Identifier INVALID_PASSWORD = new Identifier("hcclient:invalid_admin_password");
 
-    private final PaymentSlot paymentSlot;
+    private Inventory paymentInventory;
 
     public CashRegisterScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, int cost) {
         super(CommonMod.CASH_REGISTER_SCREEN,syncId,playerInventory,inventory);
         this.cost = cost;
 
-        Inventory payment = new SimpleInventory(1) {
-            @Override
-            public int getMaxCountPerStack() {
-                return Integer.MAX_VALUE;
-            }
-        };
-        addSlot(paymentSlot = new PaymentSlot(payment,0,24,54));
+        this.paymentInventory = new SimpleInventory(2);
+        addSlot(new PaymentSlot(paymentInventory,0,16,54));
+        addSlot(new PaymentSlot(paymentInventory,1,34,54));
 
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
@@ -71,16 +68,12 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
     public void close(PlayerEntity player) {
         super.close(player);
         if (!player.world.isClient) {
-            ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxItemCount());
-            if (!itemStack.isEmpty()) {
-                player.dropItem(itemStack, false);
-            }
-
+            dropInventory(player,player.world,paymentInventory);
         }
     }
 
     public boolean canBuy() {
-        return getValueOf(paymentSlot.getStack()) >= cost;
+        return getInputMoney() >= cost;
     }
 
     public int getValueOf(ItemStack stack) {
@@ -88,23 +81,35 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
     }
 
     public void onBuyItem() {
-        int change = getValueOf(paymentSlot.getStack()) - cost;
+        int change = getInputMoney() - cost;
         if (change == 0) {
-            paymentSlot.setStack(ItemStack.EMPTY);
+            paymentInventory.clear();
         } else if (change > 0) {
-            List<MoneyLike> items = ModItems.Tags.MONEY.values().stream().filter(i->i instanceof MoneyLike).map(i->(MoneyLike)i).sorted(Comparator.comparingInt(MoneyLike::getRubyValue).reversed()).collect(Collectors.toList());
-            for (MoneyLike i : items) {
-                if (change % i.getRubyValue() == 0) {
-                    int amount = change / i.getRubyValue();
-                    paymentSlot.setStack(new ItemStack((Item)i,amount));
-                    break;
+            ItemStack first;
+            ItemStack second = ItemStack.EMPTY;
+            if (change < 9) {
+                first = new ItemStack(ModItems.RUBY_NUGGET,change);
+            } else {
+                first = new ItemStack(ModItems.RUBY,change / 9);
+                if (change % 9 != 0) {
+                    second = new ItemStack(ModItems.RUBY_NUGGET,change % 9);
                 }
             }
+            paymentInventory.setStack(0,first);
+            paymentInventory.setStack(1,second);
         }
         sendContentUpdates();
         if (stockInventory instanceof CashRegisterBlockEntity) {
             ((CashRegisterBlockEntity) stockInventory).addProfits(cost);
         }
+    }
+
+    private int getInputMoney() {
+        int n = 0;
+        for (ItemStack stack : ((SimpleInventoryAccessor)paymentInventory).getStacks()) {
+            n += getValueOf(stack);
+        }
+        return n;
     }
 
     public void tryLogin(PlayerEntity player, String password) {
@@ -121,6 +126,7 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
                 public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
                     packetByteBuf.writeVarInt(cost);
                     packetByteBuf.writeVarInt(be.getProfits());
+                    packetByteBuf.writeString(password);
                 }
 
                 @Override
@@ -130,7 +136,7 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
 
                 @Override
                 public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new CashRegisterOwnerHandler(syncId,inv,be,be.getCost(),be.getProfits());
+                    return new CashRegisterOwnerHandler(syncId,inv,be,be.getCost(),be.getProfits(),password);
                 }
             });
         }
@@ -143,11 +149,11 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (index < 55) {
-                if (!this.insertItem(itemStack2, 55, this.slots.size(), true)) {
+            if (index < 56) {
+                if (!this.insertItem(itemStack2, 56, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(itemStack2, 0, 1, false)) {
+            } else if (!this.insertItem(itemStack2, 0, 2, false)) {
                 return ItemStack.EMPTY;
             }
 
@@ -171,7 +177,7 @@ public class CashRegisterScreenHandler extends AbstractCashRegisterScreenHandler
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return stack.getItem() instanceof MoneyLike;
+            return stack.getItem() instanceof MoneyLike && ((MoneyLike) stack.getItem()).canPurchase();
         }
     }
 

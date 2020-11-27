@@ -18,7 +18,7 @@ public class DarknessMaterial implements ToolMaterial {
 
     @Override
     public float getMiningSpeedMultiplier() {
-        return 12f;
+        return 14f;
     }
 
     @Override

@@ -8,6 +8,9 @@ import com.handicraft.client.CommonMod;
 import com.handicraft.client.item.ModItems;
 import com.handicraft.client.screen.cash_register.CashRegisterOwnerHandler;
 import com.handicraft.client.screen.cash_register.CashRegisterScreenHandler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,12 +33,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class CashRegisterBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
+public class CashRegisterBlockEntity extends LockableContainerBlockEntity implements SidedInventory, BlockEntityClientSerializable {
 
     private String password;
     private DefaultedList<ItemStack> stock;
     private int cost;
     private int profits;
+    private ItemStack display;
 
     public CashRegisterBlockEntity() {
         super(CommonMod.CASH_REGISTER_BLOCK_ENTITY);
@@ -100,6 +104,21 @@ public class CashRegisterBlockEntity extends LockableContainerBlockEntity implem
     }
 
     @Override
+    public void markDirty() {
+        super.markDirty();
+        System.out.println("marking dirty");
+        for (ItemStack s : stock) {
+            if (!s.isEmpty()) {
+                System.out.println("set display to " + display);
+                display = s.copy();
+                break;
+            }
+        }
+        sync();
+
+    }
+
+    @Override
     public boolean canPlayerUse(PlayerEntity player) {
         if (this.world.getBlockEntity(this.pos) != this) {
             return false;
@@ -136,6 +155,9 @@ public class CashRegisterBlockEntity extends LockableContainerBlockEntity implem
         if (password != null) {
             tag.putString("Password", password);
         }
+        if (display != null && !display.isEmpty()) {
+            tag.put("Display",display.toTag(new CompoundTag()));
+        }
         return super.toTag(tag);
     }
 
@@ -145,7 +167,14 @@ public class CashRegisterBlockEntity extends LockableContainerBlockEntity implem
         Inventories.fromTag(tag,stock);
         profits = tag.getInt("Profits");
         password = tag.getString("Password");
+        if (password.isEmpty()) {
+            password = null;
+        }
         cost = tag.getInt("Cost");
+        if (tag.contains("Display")) {
+            display = ItemStack.fromTag(tag.getCompound("Display"));
+            System.out.println("set display from NBT to " + display);
+        }
     }
 
     public void setPassword(String password) {
@@ -178,5 +207,28 @@ public class CashRegisterBlockEntity extends LockableContainerBlockEntity implem
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag compoundTag) {
+        if (compoundTag.contains("Display")) {
+            display = ItemStack.fromTag(compoundTag.getCompound("Display"));
+            System.out.println("set display for client to " + display);
+        }
+        cost = compoundTag.getInt("Cost");
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag compoundTag) {
+        compoundTag.putInt("Cost",cost);
+        if (display != null) {
+            compoundTag.put("Display", display.toTag(new CompoundTag()));
+        }
+        return compoundTag;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public ItemStack getDisplayStack() {
+        return display;
     }
 }

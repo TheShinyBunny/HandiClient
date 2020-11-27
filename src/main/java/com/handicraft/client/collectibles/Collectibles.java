@@ -30,8 +30,6 @@ public class Collectibles {
     public static final ParticleTrail RUBY_TRAIL = register("ruby_trail",new ParticleTrail(CommonMod.RUBY_CONTRAIL));
     public static final ParticleTrail PUMPKIN_TRAIL = register("pumpkin_trail",new ParticleTrail(CommonMod.JACK_O_CONTRAIL_PARTICLE));
     public static final ParticleTrail HEROBRINE_TRAIL = register("herobrine_trail",new ParticleTrail(CommonMod.HEROBRINE_TRAIL));
-    public static final Music JINGLE_BELLS = register("jingle_bells",new Music(ModSounds.JINGLE_BELLS));
-    public static final Music ZOMBIE = register("zombie",new Music(SoundEvents.ENTITY_ZOMBIE_AMBIENT));
-    public static final Music ENDER_DRAGON_DEATH = register("ender_dragon_death",new Music(SoundEvents.ENTITY_ENDER_DRAGON_DEATH));
+
 
 }

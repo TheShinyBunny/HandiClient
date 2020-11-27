@@ -125,10 +125,7 @@ public class ChallengesManager extends PersistentState {
      * Called every server tick to update the available challenges if needed. A new challenge is added every IRL day, at 00:00.
      */
     public void tick() {
-        if (challenges.size() >= challengeRepository.size()) {
-            if (season == CommonMod.SEASON) {
-                return;
-            }
+        if (season < CommonMod.SEASON) {
             season = CommonMod.SEASON;
             challenges.clear();
             lastRestockTime = 0;
@@ -177,8 +174,10 @@ public class ChallengesManager extends PersistentState {
         lastRestockTime = tag.getLong("LastRestockTime");
         int cc = tag.getInt("ChallengeCount");
         challenges.clear();
-        for (int i = 0; i < cc; i++) {
-            challenges.add(challengeRepository.get(i).create());
+        if (season == CommonMod.SEASON) {
+            for (int i = 0; i < cc; i++) {
+                challenges.add(challengeRepository.get(i).create());
+            }
         }
     }
 
@@ -198,6 +197,10 @@ public class ChallengesManager extends PersistentState {
         return challenges.stream().filter(c->c.getId() == id).findFirst().orElse(null);
     }
 
+    /**
+     * Resets the challenge manager. Removes all running challenges and starts from the first one.
+     * Also notifies any online players for a change.
+     */
     public void reset() {
         challenges.clear();
         lastRestockTime = 0;

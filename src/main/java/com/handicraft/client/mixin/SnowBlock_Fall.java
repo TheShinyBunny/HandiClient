@@ -4,6 +4,7 @@
 
 package com.handicraft.client.mixin;
 
+import com.handicraft.client.CommonMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
@@ -66,9 +67,9 @@ public class SnowBlock_Fall extends Block {
 
     @Overwrite
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
+        if (world.getLightLevel(LightType.BLOCK, pos) > 13) {
             decreaseLayer(world,state,pos);
-        } else if (!world.isRaining() && world.getBiome(pos).getPrecipitation() != Biome.Precipitation.SNOW && world.getLightLevel(pos) > 11) {
+        } else if (!world.isRaining() && world.getBiome(pos).getPrecipitation() != Biome.Precipitation.SNOW && world.getLightLevel(pos) > 11 && !world.getGameRules().getBoolean(CommonMod.DO_ALWAYS_SNOW)) {
             decreaseLayer(world,state,pos);
         }
     }

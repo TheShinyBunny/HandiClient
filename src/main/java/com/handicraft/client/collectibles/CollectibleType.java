@@ -20,7 +20,6 @@ public class CollectibleType<T extends Collectible> {
 
     public static final CollectibleType<Cape> CAPE = new CollectibleType<>("cape");
     public static final CollectibleType<ParticleTrail> PARTICLE = new CollectibleType<>("particle");
-    public static final CollectibleType<Music> MUSIC = new CollectibleType<>("music");
     private final String id;
 
     public CollectibleType(String id) {

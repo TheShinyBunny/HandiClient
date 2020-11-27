@@ -16,6 +16,7 @@ import com.handicraft.client.item.ModItems;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -29,10 +30,7 @@ import net.minecraft.loot.*;
 import net.minecraft.loot.condition.*;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.loot.entry.AlternativeEntry;
-import net.minecraft.loot.entry.EmptyEntry;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.entry.*;
 import net.minecraft.loot.function.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -61,6 +59,9 @@ public class LootTableData extends LootTablesProvider {
 
     private static final LootTableRange ONE_ROLL = ConstantLootTableRange.create(1);
     private static final LootCondition.Builder REQUIRE_SILK_TOUCH = MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))));
+    private static final LootCondition.Builder REQUIRE_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.SHEARS));
+    private static final float[] SAPLING_CHANCES = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
+    private static final float[] JUNGLE_SAPLING_CHANCES = new float[]{0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F};
 
     private final List<Pair<Consumer<BiConsumer<Identifier, LootTable.Builder>>, LootContextType>> lootTypeGenerators;
     private final DataGenerator root;
@@ -131,7 +132,7 @@ public class LootTableData extends LootTablesProvider {
         dropSelf(consumer, DARK_LEAVES);
         dropSelf(consumer, SHADOW_STONE);
         dropSelf(consumer, DARK_BUTTON);
-        dropSelf(consumer, DARK_SLAB);
+        dropSlab(consumer, DARK_SLAB);
         dropSelf(consumer, DARK_PRESSURE_PLATE);
         dropSelf(consumer, DARK_FENCE);
         dropSelf(consumer, DARK_FENCE_GATE);
@@ -149,6 +150,14 @@ public class LootTableData extends LootTablesProvider {
         dropSelf(consumer, DARKNESS_BRICKS);
         dropSelf(consumer, JACK_SOUL_LANTERN);
         dropSelf(consumer, SPEAKER_BLOCK);
+        dropSelf(consumer, CASH_REGISTER);
+        dropSlab(consumer, DIRT_SLAB);
+        dropSlab(consumer, GRASS_BLOCK_SLAB);
+        dropSlab(consumer, SHADOW_STONE_SLAB);
+        dropSelf(consumer, SHADOW_STONE_BRICKS);
+        dropSelf(consumer, SHADOW_STONE_STAIRS);
+        dropSelf(consumer, FROZEN_STONE);
+        dropSelf(consumer, FROZEN_STONE_BRICKS);
 
         consumer.accept(HALLOWEEN_CAKE,LootTable.builder());
         dropOre(consumer, DARK_ORE, ModItems.DARK_RUBY, 1, 1, false);
@@ -158,6 +167,32 @@ public class LootTableData extends LootTablesProvider {
         dropWithSilkTouch(consumer, Blocks.FARMLAND, Blocks.DIRT);
         dropOreWithAdditionalItem(consumer, Blocks.LAPIS_ORE, Items.LAPIS_LAZULI, 4, 9, Items.DIAMOND, 0.3f, 0.1f);
         dropOreWithAdditionalItem(consumer, Blocks.REDSTONE_ORE, Items.REDSTONE, 4, 5, ModItems.RUBY, 0.04f, 0.02f);
+
+        presentLeaves(consumer,Blocks.OAK_LEAVES,Blocks.OAK_SAPLING,SAPLING_CHANCES);
+        presentLeaves(consumer,Blocks.BIRCH_LEAVES,Blocks.BIRCH_SAPLING,SAPLING_CHANCES);
+        presentLeaves(consumer,Blocks.SPRUCE_LEAVES,Blocks.SPRUCE_SAPLING,SAPLING_CHANCES);
+        presentLeaves(consumer,Blocks.DARK_OAK_LEAVES,Blocks.DARK_OAK_SAPLING,SAPLING_CHANCES);
+        presentLeaves(consumer,Blocks.ACACIA_LEAVES,Blocks.ACACIA_SAPLING,SAPLING_CHANCES);
+        presentLeaves(consumer,Blocks.JUNGLE_LEAVES,Blocks.JUNGLE_SAPLING,JUNGLE_SAPLING_CHANCES);
+    }
+
+    private static void presentLeaves(BiConsumer<Block, LootTable.Builder> consumer, Block leaves, ItemConvertible sapling, float... saplingChances) {
+        consumer.accept(leaves,LootTable.builder()
+                .pool(LootPool.builder().rolls(ONE_ROLL)
+                        .with(ItemEntry.builder(leaves).conditionally(REQUIRE_SILK_TOUCH.or(REQUIRE_SHEARS))
+                        .alternatively(ItemEntry.builder(sapling).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE,saplingChances)))))
+                .pool(LootPool.builder().rolls(ONE_ROLL).conditionally(REQUIRE_SILK_TOUCH.or(REQUIRE_SHEARS).invert()).with(ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))))
+                .pool(LootPool.builder().rolls(ONE_ROLL).conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(CommonMod.PRESENT_COLLECTOR, NumberRange.IntRange.atLeast(1)))))
+                        .with(ItemEntry.builder(ModItems.GINGERBREAD).weight(5))
+                        .with(ItemEntry.builder(Items.IRON_INGOT).weight(3))
+                        .with(ItemEntry.builder(Items.EMERALD).weight(1))
+                        .with(ItemEntry.builder(Items.COOKIE).weight(5))
+                        .with(ItemEntry.builder(Items.COAL).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1,5))).weight(8))
+                        .with(ItemEntry.builder(Items.BREAD).weight(3))
+                        .with(ItemEntry.builder(Items.CHEST).weight(2))
+                        .with(ItemEntry.builder(Items.CAKE).weight(1))
+                )
+        );
     }
 
     private static void drop(BiConsumer<Block, LootTable.Builder> consumer, Block block, ItemConvertible drop) {
@@ -179,6 +214,19 @@ public class LootTableData extends LootTablesProvider {
                 ItemEntry.builder(block).conditionally(REQUIRE_SILK_TOUCH),
                 ItemEntry.builder(noSilkTouch).conditionally(SurvivesExplosionLootCondition.builder())
         ))));
+    }
+
+    private static void dropSlab(BiConsumer<Block,LootTable.Builder> consumer, Block slab) {
+        consumer.accept(slab,LootTable.builder().pool(LootPool.builder().rolls(ConstantLootTableRange.create(1))
+                .with(ItemEntry.builder(slab)
+                        .apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2))
+                                .conditionally(BlockStatePropertyLootCondition.builder(slab)
+                                        .properties(StatePredicate.Builder.create().exactMatch(SlabBlock.TYPE, SlabType.DOUBLE))
+                                )
+                        )
+                        .conditionally(SurvivesExplosionLootCondition.builder())
+                )
+        ));
     }
 
     private static void dropOre(BiConsumer<Block, LootTable.Builder> consumer, Block ore, Item drop, int min, int max, boolean fortunable) {

@@ -75,13 +75,7 @@ public class SpeakerBlockEntity extends BlockEntity implements Tickable {
 
     public static void updateFromPacket(PacketContext ctx, PacketByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
-        Collectible c = Collectibles.REGISTRY.get(buf.readVarInt());
-        Music music;
-        if (c instanceof Music) {
-            music = (Music) c;
-        } else {
-            music = null;
-        }
+        Music music = Music.REGISTRY.get(buf.readVarInt());
         float volume = buf.readFloat();
         double range = buf.readDouble();
         boolean loop = buf.readBoolean();
@@ -126,7 +120,7 @@ public class SpeakerBlockEntity extends BlockEntity implements Tickable {
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         if (music != null) {
-            tag.putString("Music",Collectibles.REGISTRY.getId(music).toString());
+            tag.putString("Music",Music.REGISTRY.getId(music).toString());
         }
         tag.putFloat("Volume",volume);
         tag.putDouble("Range",range);
@@ -138,10 +132,7 @@ public class SpeakerBlockEntity extends BlockEntity implements Tickable {
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state, tag);
         if (tag.contains("Music", NbtType.STRING)) {
-            Collectible c = Collectibles.REGISTRY.get(new Identifier(tag.getString("Music")));
-            if (c instanceof Music) {
-                this.music = ((Music) c);
-            }
+            this.music = Music.REGISTRY.get(new Identifier(tag.getString("Music")));
         }
         this.volume = tag.getFloat("Volume");
         this.range = tag.getDouble("Range");

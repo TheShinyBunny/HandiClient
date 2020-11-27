@@ -4,6 +4,7 @@
 
 package com.handicraft.client.client.screen;
 
+import com.handicraft.client.item.ModItems;
 import com.handicraft.client.screen.cash_register.CashRegisterScreenHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.Unpooled;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -42,8 +44,7 @@ public class CashRegisterScreen extends HandledScreen<CashRegisterScreenHandler>
             if (passwordField.getText().isEmpty()) {
                 loginReject = new TranslatableText("container.cash_register.password_empty");
             } else {
-                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                buf.writeString(passwordField.getText());
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer()).writeString(passwordField.getText());
                 ClientSidePacketRegistry.INSTANCE.sendToServer(CashRegisterScreenHandler.ADMIN_LOGIN, buf);
             }
         }));
@@ -71,6 +72,35 @@ public class CashRegisterScreen extends HandledScreen<CashRegisterScreenHandler>
     }
 
     @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        super.drawForeground(matrices, mouseX, mouseY);
+
+        textRenderer.draw(matrices,new TranslatableText("container.cash_register.payment"),10,40,0);
+
+        int ruby = handler.cost / 9;
+        int nuggets = handler.cost % 9;
+        int xoff;
+
+        if (ruby == 0 || nuggets == 0) {
+            xoff = 28;
+        } else {
+            xoff = 16;
+        }
+        if (ruby > 0) {
+            ItemStack stack = new ItemStack(ModItems.RUBY,ruby);
+            itemRenderer.renderGuiItemIcon(stack,xoff,75);
+            itemRenderer.renderGuiItemOverlay(textRenderer,stack,xoff,75,null);
+            xoff += 18;
+        }
+
+        if (nuggets > 0) {
+            ItemStack stack = new ItemStack(ModItems.RUBY_NUGGET,nuggets);
+            itemRenderer.renderGuiItemIcon(stack,xoff,75);
+            itemRenderer.renderGuiItemOverlay(textRenderer,stack,xoff,75,null);
+        }
+    }
+
+    @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.client.getTextureManager().bindTexture(TEXTURE);
@@ -78,7 +108,7 @@ public class CashRegisterScreen extends HandledScreen<CashRegisterScreenHandler>
         int j = (this.height - this.backgroundHeight) / 2;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (loginReject != null) {
-            drawTextWithShadow(matrices,textRenderer,loginReject,x + backgroundWidth / 2,y - 40,0xffff1111);
+            drawCenteredText(matrices,textRenderer,loginReject,x + backgroundWidth / 2,y - 35,0xffff1111);
         }
     }
 

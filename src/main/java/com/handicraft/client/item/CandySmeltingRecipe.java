@@ -4,7 +4,6 @@
 
 package com.handicraft.client.item;
 
-import com.handicraft.client.block.entity.NetheriteFurnaceBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.IntTag;

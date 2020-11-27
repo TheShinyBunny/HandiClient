@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " E ",
+    "ECE",
+    " E "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "E": {
+      "item": "minecraft:pumpkin_seeds"
+    }
+  },
+  "result": {
+    "item": "minecraft:pumpkin"
+  }
+}

@@ -49,6 +49,8 @@ public class HandiDataGenerator {
             adder.make(BlockTags.WOODEN_SLABS).add(ModBlocks.DARK_SLAB);
             adder.make(BlockTags.WOODEN_STAIRS).add(ModBlocks.DARK_STAIRS);
             adder.make(BlockTags.WOODEN_BUTTONS).add(ModBlocks.DARK_BUTTON);
+            adder.make(BlockTags.SLABS).add(ModBlocks.DIRT_SLAB,ModBlocks.GRASS_BLOCK_SLAB,ModBlocks.SHADOW_STONE_SLAB);
+            adder.make(BlockTags.STAIRS).add(ModBlocks.SHADOW_STONE_STAIRS);
         });
         generator.install(blockTags);
         generator.install(new ItemTagsData(generator, blockTags, adder->{
@@ -63,6 +65,8 @@ public class HandiDataGenerator {
             adder.copy(BlockTags.WOODEN_SLABS,ItemTags.WOODEN_SLABS);
             adder.copy(BlockTags.WOODEN_STAIRS,ItemTags.WOODEN_STAIRS);
             adder.copy(BlockTags.WOODEN_PRESSURE_PLATES,ItemTags.WOODEN_PRESSURE_PLATES);
+            adder.copy(BlockTags.SLABS,ItemTags.SLABS);
+            adder.copy(BlockTags.STAIRS,ItemTags.STAIRS);
         }));
         generator.install(new HandiTagsData<>(generator,Registry.FLUID,"fluids",adder->{
             adder.make(FluidTags.WATER).add(ModFluids.getAll().toArray(Fluid[]::new));

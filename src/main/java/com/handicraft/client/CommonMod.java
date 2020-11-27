@@ -4,6 +4,10 @@
 
 package com.handicraft.client;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonWriter;
 import com.handicraft.client.block.ColoredWaterBlock;
 import com.handicraft.client.block.ModBlocks;
 import com.handicraft.client.block.entity.CashRegisterBlockEntity;
@@ -17,6 +21,7 @@ import com.handicraft.client.data.HandiDataGenerator;
 import com.handicraft.client.emotes.EmoteManager;
 import com.handicraft.client.enchantments.FarmingFeetEnchantment;
 import com.handicraft.client.enchantments.HeatWalkerEnchantment;
+import com.handicraft.client.enchantments.PresentCollectorEnchantment;
 import com.handicraft.client.entity.DarkBlazeEntity;
 import com.handicraft.client.entity.DarkPillagerEntity;
 import com.handicraft.client.entity.DarknessWizardEntity;
@@ -100,6 +105,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.ZoneId;
@@ -110,6 +116,8 @@ import java.util.function.Function;
 
 public class CommonMod implements ModInitializer {
 
+    public static final int SEASON = 2;
+    public static final int VERSION = 4;
 
     public static final DefaultParticleType JACK_O_CONTRAIL_PARTICLE = FabricParticleTypes.simple(true);
     public static final DefaultParticleType RUBY_CONTRAIL = FabricParticleTypes.simple(true);
@@ -121,6 +129,7 @@ public class CommonMod implements ModInitializer {
     public static final Identifier CHANGE_STORED_XP = new Identifier("hcclient:store_xp");
     public static final HeatWalkerEnchantment HEAT_WALKER = new HeatWalkerEnchantment();
     public static final FarmingFeetEnchantment FARMING_FEET = new FarmingFeetEnchantment();
+    public static final PresentCollectorEnchantment PRESENT_COLLECTOR = new PresentCollectorEnchantment();
 
     public static final ScreenHandlerType<EnderChestScreenHandler> ENDER_CHEST_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(new Identifier("hcclient:enderchest"),(i, playerInventory, packetByteBuf) -> {
         int stored = packetByteBuf.readVarInt();
@@ -145,15 +154,13 @@ public class CommonMod implements ModInitializer {
     public static final Identifier REQUEST_CAPE_TEXTURE = new Identifier("hcclient:request_cape");
     public static final Identifier RESPONSE_CAPE_TEXTURE = new Identifier("hcclient:response_cape");
 
-    public static final List<String> ALTS = Arrays.asList("TheSecondBunny","RotmansCamera","Arbel2008","Barvazy");
+    public static final List<String> ALTS = new ArrayList<>();
 
     public static final StructureFeature<DefaultFeatureConfig> DARK_TEMPLE = new DarkTempleStructure();
     public static final StructureFeature<DefaultFeatureConfig> DARK_FORTRESS = new DarkFortressStructure();
 
     public static final AtomicReference<MinecraftServer> SERVER = new AtomicReference<>();
 
-    public static final int SEASON = 2;
-    public static final int VERSION = 4;
 
     public static final TimeZone TIME_ZONE = TimeZone.getTimeZone(ZoneId.ofOffset("GMT", ZoneOffset.ofHours(3)));
     public static final RegistryKey<World> DARKNESS_KEY = RegistryKey.of(Registry.DIMENSION, new Identifier("handicraft:darkness"));
@@ -181,35 +188,47 @@ public class CommonMod implements ModInitializer {
     @Override
     public void onInitialize() {
 
+        //region Auto Registries
         registerAll(ModSounds.class,SoundEvent.class,Registry.SOUND_EVENT,null, SoundEvent::new);
         registerAll(ModItems.class,Item.class,Registry.ITEM);
         registerAll(ModBlocks.class,Block.class,Registry.BLOCK,this::registerBlockItem,null);
         registerAll(ModPotions.class,Potion.class,Registry.POTION);
+        //endregion
 
         ModFluids.register();
 
         ColoredWaterBlock.registerAll();
 
+        //region Enchantments
         Registry.register(Registry.ENCHANTMENT,new Identifier("heat_walker"),HEAT_WALKER);
         Registry.register(Registry.ENCHANTMENT,new Identifier("farming_feet"),FARMING_FEET);
+        Registry.register(Registry.ENCHANTMENT,new Identifier("present_collector"),PRESENT_COLLECTOR);
+        //endregion
 
+        //region Particles
         Registry.register(Registry.PARTICLE_TYPE,new Identifier("hcclient:jack_o_contrail"),JACK_O_CONTRAIL_PARTICLE);
         Registry.register(Registry.PARTICLE_TYPE,new Identifier("hcclient:ruby_contrail"),RUBY_CONTRAIL);
         Registry.register(Registry.PARTICLE_TYPE,new Identifier("hcclient:herobrine_contrail"),HEROBRINE_TRAIL);
+        //endregion
 
+        //region Block Entities
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:netherite_furnace"),NETHERITE_FURNACE_BLOCK_ENTITY_TYPE);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:speaker_block"), SPEAKER_BLOCK_ENTITY_TYPE);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("hcclient:cash_register"), CASH_REGISTER_BLOCK_ENTITY);
         Registry.register(Registry.BLOCK_ENTITY_TYPE,new Identifier("minecraft:cauldron"), CAULDRON_BLOCK_ENTITY);
+        //endregion
 
         RecipeSerializer.register("cooking_special_candy",CANDY_RECIPE_SERIALIZER);
 
+        //region Entities
         Registry.register(Registry.ENTITY_TYPE,new Identifier("darkness_wizard"),DARKNESS_WIZARD);
         FabricDefaultAttributeRegistry.register(DARKNESS_WIZARD,DarknessWizardEntity.createIllusionerAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH,200).add(EntityAttributes.GENERIC_FOLLOW_RANGE,48).add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS,3f));
 
         Registry.register(Registry.ENTITY_TYPE,new Identifier("dark_blaze"),DARK_BLAZE);
         Registry.register(Registry.ENTITY_TYPE,new Identifier("dark_pillager"),DARK_PILLAGER);
+        //endregion
 
+        //region Structures
         Registry.register(Registry.STRUCTURE_PIECE,new Identifier("handicraft","dark_temple_piece"), ModStructurePieces.DARK_TEMPLE_PIECE_TYPE);
         FabricStructureBuilder.create(new Identifier("handicraft","dark_temple"),DARK_TEMPLE)
                 .step(GenerationStep.Feature.SURFACE_STRUCTURES)
@@ -220,6 +239,101 @@ public class CommonMod implements ModInitializer {
                 .step(GenerationStep.Feature.SURFACE_STRUCTURES)
                 .defaultConfig(20,15,238947)
                 .register();
+        //endregion
+
+        Items.BEETROOT.getFoodComponent().getStatusEffects().add(Pair.of(new StatusEffectInstance(StatusEffects.HASTE,30 * 20,1,false,true,true),1.0f));
+
+
+        //region Rewards
+        Reward.register(new Identifier("hcclient:spooky_disc"), new ItemReward("Spooky Music Disc", 1, 138, new ItemStack(ModItems.SPOOKY_MUSIC_DISC)));
+        Reward.register(new Identifier("hcclient:barvazy_emote"), new EmoteReward("Barvazy Emote", 2, 89, EmoteManager.BARVAZY));
+        Reward.register(new Identifier("hcclient:darkvazy_emote"), new EmoteReward("Darkvazy Emote", 2, 89, EmoteManager.DARKVAZY));
+        Reward.register(new Identifier("hcclient:jack_o_lantrail"), new ParticleReward("Jack-o-Lantrail", 3, 138, Collectibles.PUMPKIN_TRAIL));
+        Reward.register(new Identifier("hcclient:50_diamonds"), new ItemReward("x50 Diamonds", 4, 89, new ItemStack(Items.DIAMOND, 50)));
+        Reward.register(new Identifier("hcclient:pumpkin_cape"), new CapeReward("Pumpkin Cape", 5, 138, Collectibles.PUMPKIN_CAPE));
+
+        Reward.register(new Identifier("hcclient:skeleton_emote"), new EmoteReward("Skeleton Emote", 7, 89, EmoteManager.SKELETON));
+        Reward.register(new Identifier("hcclient:10_ruby_blocks"), new ItemReward("x10 Ruby Blocks", 9, 89, new ItemStack(ModBlocks.RUBY_BLOCK, 10)));
+        Reward.register(new Identifier("hcclient:herobrine_contrail"), new ParticleReward("Herobrine Trail", 11, 138, Collectibles.HEROBRINE_TRAIL));
+        Reward.register(new Identifier("hcclient:spooky_scary_skeletons"), new ItemReward("Spooky Scary Skeletons Disc", 13, 138, new ItemStack(ModItems.SPOOKY_SCARY_SKELETONS_DISC)));
+        Reward.register(new Identifier("hcclient:ruby_cape"), new CapeReward("Ruby Cape", 15, 138, Collectibles.RUBY_CAPE));
+
+        Reward.register(new Identifier("hcclient:herobrine_emote"), new EmoteReward("Herobrine Emote", 18, 89, EmoteManager.HEROBRINE));
+        Reward.register(new Identifier("hcclient:ruby_contrail"), new ParticleReward("Ruby Trail", 21, 138, Collectibles.RUBY_TRAIL));
+        Reward.register(new Identifier("hcclient:5_netherite"), new ItemReward("x5 Netherite Ingots", 24, 89, new ItemStack(Items.NETHERITE_INGOT, 5)));
+        Reward.register(new Identifier("hcclient:atla_disc"), new ItemReward("Avatar Music Disc", 27, 138, new ItemStack(ModItems.AVATAR_DISC)));
+        Reward.register(new Identifier("hcclient:bat_cape"), new CapeReward("Bat Cape", 30, 138, Collectibles.BAT_CAPE));
+        //endregion
+
+        //region Events
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            SERVER.set(server);
+            File altsFile = new File(server.getRunDirectory(),"alts.json");
+            if (altsFile.exists()) {
+                try {
+                    JsonElement element = new Gson().fromJson(new BufferedReader(new FileReader(altsFile)),JsonElement.class);
+                    if (element.isJsonArray()) {
+                        for (JsonElement e : element.getAsJsonArray()) {
+                            ALTS.add(e.getAsString());
+                        }
+                        return;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            } else {
+                try {
+                    altsFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            JsonArray arr = new JsonArray();
+            arr.add("Arbel2008");
+            arr.add("TheSecondBunny");
+            arr.add("RotmansCamera");
+            arr.add("Barvazy");
+            try {
+                Gson gson = new Gson();
+                JsonWriter w = new JsonWriter(new FileWriter(altsFile));
+                w.setIndent("    ");
+                gson.toJson(arr,w);
+                w.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        CommandRegistrationCallback.EVENT.register((d,a)->registerCommands(d));
+
+        ServerTickEvents.START_WORLD_TICK.register(serverWorld -> {
+            if (serverWorld == serverWorld.getServer().getOverworld()) {
+                ChallengesManager.get(serverWorld).tick();
+            }
+        });
+
+        ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
+            if (serverWorld == minecraftServer.getOverworld()) {
+                ChallengesManager.get(serverWorld).init();
+            }
+        });
+
+        UseItemCallback.EVENT.register((playerEntity, world, hand) -> {
+            ItemStack stack = playerEntity.getStackInHand(hand);
+            if (stack.getItem() instanceof DyeItem) {
+                DyeColor color = ((DyeItem) stack.getItem()).getColor();
+                if (ColoredWaterBlock.usedColor(playerEntity,world,color)) {
+                    if (!playerEntity.abilities.creativeMode) {
+                        stack.decrement(1);
+                    }
+                    return TypedActionResult.success(stack);
+                }
+            }
+            return TypedActionResult.pass(stack);
+        });
+        //endregion
 
         ServerSidePacketRegistry.INSTANCE.register(REQUEST_CAPE_TEXTURE,(ctx,buf)->{
             UUID id = buf.readUuid();
@@ -253,58 +367,10 @@ public class CommonMod implements ModInitializer {
             }
         }));
 
-        ServerLifecycleEvents.SERVER_STARTED.register(SERVER::set);
-
-
-
-        Reward.register(new Identifier("hcclient:spooky_disc"), new ItemReward("Spooky Music Disc", 1, 138, new ItemStack(ModItems.SPOOKY_MUSIC_DISC)));
-        Reward.register(new Identifier("hcclient:barvazy_emote"), new EmoteReward("Barvazy Emote", 2, 89, EmoteManager.BARVAZY));
-        Reward.register(new Identifier("hcclient:darkvazy_emote"), new EmoteReward("Darkvazy Emote", 2, 89, EmoteManager.DARKVAZY));
-        Reward.register(new Identifier("hcclient:jack_o_lantrail"), new ParticleReward("Jack-o-Lantrail", 3, 138, Collectibles.PUMPKIN_TRAIL));
-        Reward.register(new Identifier("hcclient:50_diamonds"), new ItemReward("x50 Diamonds", 4, 89, new ItemStack(Items.DIAMOND, 50)));
-        Reward.register(new Identifier("hcclient:pumpkin_cape"), new CapeReward("Pumpkin Cape", 5, 138, Collectibles.PUMPKIN_CAPE));
-
-        Reward.register(new Identifier("hcclient:skeleton_emote"), new EmoteReward("Skeleton Emote", 7, 89, EmoteManager.SKELETON));
-        Reward.register(new Identifier("hcclient:10_ruby_blocks"), new ItemReward("x10 Ruby Blocks", 9, 89, new ItemStack(ModBlocks.RUBY_BLOCK, 10)));
-        Reward.register(new Identifier("hcclient:herobrine_contrail"), new ParticleReward("Herobrine Trail", 11, 138, Collectibles.HEROBRINE_TRAIL));
-        Reward.register(new Identifier("hcclient:spooky_scary_skeletons"), new ItemReward("Spooky Scary Skeletons Disc", 13, 138, new ItemStack(ModItems.SPOOKY_SCARY_SKELETONS_DISC)));
-        Reward.register(new Identifier("hcclient:ruby_cape"), new CapeReward("Ruby Cape", 15, 138, Collectibles.RUBY_CAPE));
-
-        Reward.register(new Identifier("hcclient:herobrine_emote"), new EmoteReward("Herobrine Emote", 18, 89, EmoteManager.HEROBRINE));
-        Reward.register(new Identifier("hcclient:ruby_contrail"), new ParticleReward("Ruby Trail", 21, 138, Collectibles.RUBY_TRAIL));
-        Reward.register(new Identifier("hcclient:5_netherite"), new ItemReward("x5 Netherite Ingots", 24, 89, new ItemStack(Items.NETHERITE_INGOT, 5)));
-        Reward.register(new Identifier("hcclient:atla_disc"), new ItemReward("Avatar Music Disc", 27, 138, new ItemStack(ModItems.AVATAR_DISC)));
-        Reward.register(new Identifier("hcclient:bat_cape"), new CapeReward("Bat Cape", 30, 138, Collectibles.BAT_CAPE));
-
-
-        Items.BEETROOT.getFoodComponent().getStatusEffects().add(Pair.of(new StatusEffectInstance(StatusEffects.HASTE,30 * 20,1,false,true,true),1.0f));
-
-        CommandRegistrationCallback.EVENT.register((d,a)->registerCommands(d));
-
-        ServerTickEvents.START_WORLD_TICK.register(serverWorld -> {
-            if (serverWorld == serverWorld.getServer().getOverworld()) {
-                ChallengesManager.get(serverWorld).tick();
+        ServerSidePacketRegistry.INSTANCE.register(CashRegisterOwnerHandler.CHANGE_PASSWORD,(context, buffer) -> {
+            if (context.getPlayer().currentScreenHandler instanceof CashRegisterOwnerHandler) {
+                ((CashRegisterOwnerHandler) context.getPlayer().currentScreenHandler).setPassword(buffer.readString());
             }
-        });
-
-        ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
-            if (serverWorld == minecraftServer.getOverworld()) {
-                ChallengesManager.get(serverWorld).init();
-            }
-        });
-
-        UseItemCallback.EVENT.register((playerEntity, world, hand) -> {
-            ItemStack stack = playerEntity.getStackInHand(hand);
-            if (stack.getItem() instanceof DyeItem) {
-                DyeColor color = ((DyeItem) stack.getItem()).getColor();
-                if (ColoredWaterBlock.usedColor(playerEntity,world,color)) {
-                    if (!playerEntity.abilities.creativeMode) {
-                        stack.decrement(1);
-                    }
-                    return TypedActionResult.success(stack);
-                }
-            }
-            return TypedActionResult.pass(stack);
         });
 
         ServerSidePacketRegistry.INSTANCE.register(PlayerCollectibles.CLAIM_REWARD,(ctx,buf)->{
@@ -322,7 +388,7 @@ public class CommonMod implements ModInitializer {
         });
 
 
-        DispenserBlock.registerBehavior(Items.POTION, new FallibleItemDispenserBehavior() {
+        /*DispenserBlock.registerBehavior(Items.POTION, new FallibleItemDispenserBehavior() {
             @Override
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos pos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
@@ -398,7 +464,7 @@ public class CommonMod implements ModInitializer {
                     return super.dispenseSilently(pointer, stack);
                 }
             }
-        });
+        });*/
 
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment() && "true".equalsIgnoreCase(System.getProperty("data"))) {

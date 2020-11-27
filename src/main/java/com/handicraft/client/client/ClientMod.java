@@ -10,6 +10,7 @@ import com.handicraft.client.block.entity.CauldronBlockEntity;
 import com.handicraft.client.block.entity.SpeakerBlockEntity;
 import com.handicraft.client.challenge.*;
 import com.handicraft.client.challenge.client.ClientChallengesManager;
+import com.handicraft.client.client.entity.CashRegisterRenderer;
 import com.handicraft.client.client.entity.DarkBlazeRenderer;
 import com.handicraft.client.client.entity.DarkPillagerRenderer;
 import com.handicraft.client.client.entity.DarknessWizardRenderer;
@@ -38,6 +39,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
@@ -45,11 +47,13 @@ import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
@@ -60,6 +64,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -110,6 +115,7 @@ public class ClientMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        //region Render Layers
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PEONY, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POTTED_PEONY, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.TOMBSTONE, RenderLayer.getCutout());
@@ -121,12 +127,18 @@ public class ClientMod implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_TORCH, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GREEN_FIRE_WALL_TORCH, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PURPLE_FIRE_WALL_TORCH, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.OAK_LEAVES,RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.GRASS_BLOCK_SLAB, RenderLayer.getCutoutMipped());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CASH_REGISTER,RenderLayer.getCutout());
 
+        //endregion
+
+        //region Particles
         ParticleFactoryRegistry.getInstance().register(CommonMod.JACK_O_CONTRAIL_PARTICLE, JackOContrailParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(CommonMod.RUBY_CONTRAIL, RubyContrail.Factory::new);
         ParticleFactoryRegistry.getInstance().register(CommonMod.HEROBRINE_TRAIL, HerobrineContrail.Factory::new);
+        //endregion
 
+        //region HandledScreens
         ScreenRegistry.register(CommonMod.ENDER_CHEST_HANDLER_TYPE, EnderChestScreen::new);
         ScreenRegistry.register(CommonMod.ITEM_CLAIM_HANDLER_TYPE, ItemClaimScreen::new);
         ScreenRegistry.register(CommonMod.NETHERITE_FURNACE_HANDLER_TYPE, NetheriteFurnaceScreen::new);
@@ -134,10 +146,15 @@ public class ClientMod implements ClientModInitializer {
         ScreenRegistry.register(CommonMod.CANDY_BUCKET_HANDLER_TYPE, CandyBucketScreen::new);
         ScreenRegistry.register(CommonMod.CASH_REGISTER_SCREEN, CashRegisterScreen::new);
         ScreenRegistry.register(CommonMod.CASH_REGISTER_OWNER_SCREEN, CashRegisterOwnerScreen::new);
+        //endregion
 
+        //region Entity Renders
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARKNESS_WIZARD, ((dispatcher,ctx)->new DarknessWizardRenderer(dispatcher)));
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARK_BLAZE, (dispatcher,ctx)->new DarkBlazeRenderer(dispatcher));
         EntityRendererRegistry.INSTANCE.register(CommonMod.DARK_PILLAGER, (dispatcher,ctx)->new DarkPillagerRenderer(dispatcher));
+        //endregion
+
+        BlockEntityRendererRegistry.INSTANCE.register(CommonMod.CASH_REGISTER_BLOCK_ENTITY, CashRegisterRenderer::new);
 
         ClientSidePacketRegistry.INSTANCE.register(CommonMod.RESPONSE_CAPE_TEXTURE,(ctx, buf) -> {
             UUID id = buf.readUuid();
@@ -278,7 +295,13 @@ public class ClientMod implements ClientModInitializer {
             return BiomeColors.getWaterColor(world,pos);
         },Blocks.CAULDRON);
 
-
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getColor(0.5D, 1.0D);
+        },ModBlocks.GRASS_BLOCK_SLAB);
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+            BlockState blockState = ((BlockItem)stack.getItem()).getBlock().getDefaultState();
+            return MinecraftClient.getInstance().getBlockColors().getColor(blockState, null, null, tintIndex);
+        },ModBlocks.GRASS_BLOCK_SLAB);
     }
 
     public static void pingServer() {

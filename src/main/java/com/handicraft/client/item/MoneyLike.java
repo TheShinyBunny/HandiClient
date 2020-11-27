@@ -8,4 +8,6 @@ public interface MoneyLike {
 
     int getRubyValue();
 
+    boolean canPurchase();
+
 }

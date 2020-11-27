@@ -86,7 +86,7 @@ public abstract class CauldronBlock_Extend implements BlockEntityProvider, Fluid
                         effect.getEffectType().applyInstantEffect(null,null, (LivingEntity) entity,effect.getAmplifier(),1.0f);
                         used = true;
                     } else {
-                        if (((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(effect))) {
+                        if (!((LivingEntity) entity).hasStatusEffect(effect.getEffectType()) && ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(effect))) {
                             used = true;
                         }
                     }

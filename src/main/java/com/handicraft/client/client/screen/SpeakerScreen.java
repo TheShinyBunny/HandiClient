@@ -112,7 +112,7 @@ public class SpeakerScreen extends Screen {
         if (w == null) {
             buf.writeVarInt(-1);
         } else {
-            buf.writeVarInt(Collectibles.REGISTRY.getRawId(w.music));
+            buf.writeVarInt(Music.REGISTRY.getRawId(w.music));
         }
         buf.writeFloat(volume);
         buf.writeDouble(range);
@@ -148,13 +148,11 @@ public class SpeakerScreen extends Screen {
             this.height = height;
             this.itemHeight = itemHeight;
             this.maxVisibleItems = height / itemHeight;
-            for (Collectible m : Collectibles.REGISTRY.stream().filter(c->c instanceof Music).collect(Collectors.toList())) {
-                if (m instanceof Music) {
-                    MusicWidget entry = new MusicWidget(((Music) m));
-                    entries.add(entry);
-                    if (speaker.getMusic() == m) {
-                        selected = entry;
-                    }
+            for (Music m : Music.REGISTRY) {
+                MusicWidget entry = new MusicWidget(m);
+                entries.add(entry);
+                if (speaker.getMusic() == m) {
+                    selected = entry;
                 }
             }
         }

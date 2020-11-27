@@ -21,11 +21,14 @@ public class ServerWorld_SnowStacking {
         BlockState prev = serverWorld.getBlockState(pos);
         if (prev.isOf(Blocks.SNOW)) {
             int layers = prev.get(SnowBlock.LAYERS);
-            if (layers < 8) {
+            if (layers < 3) {
                 serverWorld.setBlockState(pos, prev.with(SnowBlock.LAYERS, prev.get(SnowBlock.LAYERS) + 1));
             }
         } else {
-            serverWorld.setBlockState(pos, state);
+            BlockState down = serverWorld.getBlockState(pos.down());
+            if (!down.isOf(Blocks.SNOW)) {
+                serverWorld.setBlockState(pos, state);
+            }
         }
         return true;
     }

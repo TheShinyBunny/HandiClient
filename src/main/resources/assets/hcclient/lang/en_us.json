@@ -18,6 +18,10 @@
   "container.cash_register.password_empty": "Password is Empty",
   "container.cash_register.password": "Password",
   "container.cash_register.cost": "Price",
+  "container.cash_register.claim": "Claim",
+  "container.cash_register.remove": "Remove",
+  "container.cash_register.payment": "Payment:",
+  "container.cash_register.cannot_remove": "You must first take all profits and clear the stock",
   "gui.item_claim.title": "Claim Your Reward:",
 
   "pause.back_to_game": "BACK TO GAME",
@@ -60,6 +64,15 @@
   "block.minecraft.dark_obsidian": "Dark Obsidian",
   "block.minecraft.darkness_bricks": "Darkness Bricks",
   "block.minecraft.jack_soul_lantern": "Jack Soul Lantern",
+  "block.minecraft.cash_register": "Cash Register",
+  "block.minecraft.dirt_slab": "Dirt Slab",
+  "block.minecraft.grass_block_slab": "Grass Block Slab",
+  "block.minecraft.speaker_block": "Speaker",
+  "block.minecraft.frozen_stone": "Frozen Stone",
+  "block.minecraft.frozen_stone_bricks": "Frozen Stone Bricks",
+  "block.minecraft.shadow_stone_stairs": "Shadow Stone Stairs",
+  "block.minecraft.shadow_stone_slab": "Shadow Stone Slab",
+  "block.minecraft.shadow_stone_bricks": "Shadow Stone Bricks",
 
   "item.minecraft.candy.0": "Blue Toffee",
   "item.minecraft.candy.1": "Bubble Gum",
@@ -88,6 +101,7 @@
   "item.minecraft.darkness_wizard_spawn_egg": "Darkness Wizard Spawn Egg",
   "item.minecraft.darkness_axe": "Darkness Axe",
   "item.exclusive.handicrack": "§dHandiCrack 2020 Exclusive",
+  "item.minecraft.gingerbread": "Gingerbread",
 
   "entity.minecraft.darkness_wizard": "Darkness Wizard",
   "entity.minecraft.dark_blaze": "Dark Blaze",
@@ -112,6 +126,8 @@
   "challenges.load.failure": "Failed to load challenges",
   "challenges.load.failure.desc": "You must connect to HandiCraft once to save challenge state",
   "challenges.progress_update": "[Progress] %s: %d/%d",
+  "challenges.new.single": "You have a new Challenge: %s",
+  "challenges.new.multiple": "You have %d new Challenges",
 
   "handipass.claim": "Claim",
   "handipass.claimed": "CLAIMED",
@@ -146,8 +162,8 @@
   "speaker.volume": "Volume: %d",
   "speaker.range": "Range: %d Blocks",
   "speaker.loop": "Loop",
-  "music.hcclient.jingle_bells": "Jingle Bells",
-  "music.hcclient.zombie": "Zombie",
-  "music.hcclient.ender_dragon_death": "Ender Dragon Death"
+  "music.minecraft.jingle_bells": "Jingle Bells",
+  "music.minecraft.zombie": "Zombie",
+  "music.minecraft.ender_dragon_death": "Ender Dragon Death"
 
 }

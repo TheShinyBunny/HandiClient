@@ -136,6 +136,7 @@ public class RecipeData implements DataProvider {
         compressedItem(consumer, ModItems.RUBY_BLOCK, RUBY);
         compressedItem(consumer, ModItems.DARK_RUBY_BLOCK, DARK_RUBY);
         compressedItem(consumer, RUBY, RUBY_NUGGET);
+        ShapelessRecipeJsonFactory.create(RUBY,16).input(DARK_RUBY).criterion("has_ruby",conditionsFromItem(RUBY)).offerTo(consumer,"dark_ruby_from_ruby");
         ShapedRecipeJsonFactory.create(NETHERITE_FURNACE).pattern("SSS").pattern("SFS").pattern("SNS").input('S',Blocks.SOUL_SOIL).input('F',Blocks.FURNACE).input('N', NETHERITE_INGOT).criterion("has_netherite",conditionsFromItem(NETHERITE_INGOT)).offerTo(consumer);
         surrounded(consumer, GOLDEN_BEETROOT, BEETROOT, GOLD_NUGGET);
 
@@ -151,9 +152,26 @@ public class RecipeData implements DataProvider {
         //checkerboard(consumer,DARK_OBSIDIAN,OBSIDIAN,DARK_RUBY);
         bricks(consumer,DARKNESS_BRICKS,DARK_STONE);
         ShapedRecipeJsonFactory.create(JACK_SOUL_LANTERN).pattern("P").pattern("T").input('P',CARVED_PUMPKIN).input('T',SOUL_TORCH).criterion("has_soul_torch",conditionsFromItem(SOUL_TORCH)).offerTo(consumer);
+
+        slab(consumer,DIRT_SLAB,DIRT, null);
+        slab(consumer,GRASS_BLOCK_SLAB,GRASS_BLOCK, null);
+        crossed(consumer,PUMPKIN,CARVED_PUMPKIN,PUMPKIN_SEEDS);
+
+        slab(consumer,SHADOW_STONE_SLAB,SHADOW_STONE, null);
+        stairs(consumer,SHADOW_STONE_STAIRS,SHADOW_STONE,null);
+        bricks(consumer,SHADOW_STONE_BRICKS,SHADOW_STONE);
+
+        ShapelessRecipeJsonFactory.create(FROZEN_STONE,2).input(STONE).input(PACKED_ICE).criterion("has_ice",conditionsFromItem(PACKED_ICE)).offerTo(consumer);
+        ShapelessRecipeJsonFactory.create(FROZEN_STONE_BRICKS,2).input(STONE_BRICKS).input(PACKED_ICE).criterion("has_ice",conditionsFromItem(PACKED_ICE)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(FROZEN_STONE_BRICKS).pattern("##").pattern("##").input('#',FROZEN_STONE).criterion("has_ingredient",conditionsFromItem(FROZEN_STONE)).offerTo(consumer,"frozen_bricks_from_stone");
+
     }
 
-    private static void checkerboard(Consumer<RecipeJsonProvider> consumer, Block output, Item cornersAndCenter, Item edges) {
+    private static void crossed(Consumer<RecipeJsonProvider> consumer, ItemConvertible result, ItemConvertible center, ItemConvertible edges) {
+        ShapedRecipeJsonFactory.create(result).pattern(" E ").pattern("ECE").pattern(" E ").input('C',center).input('E',edges).criterion("has_edges",conditionsFromItem(edges)).offerTo(consumer);
+    }
+
+    private static void checkerboard(Consumer<RecipeJsonProvider> consumer, ItemConvertible output, ItemConvertible cornersAndCenter, ItemConvertible edges) {
         ShapedRecipeJsonFactory.create(output).pattern("CEC").pattern("ECE").pattern("CEC").input('C',cornersAndCenter).input('E',edges).criterion("has_edges",conditionsFromItem(edges)).offerTo(consumer);
     }
 
@@ -165,12 +183,20 @@ public class RecipeData implements DataProvider {
         wood(consumer,wood,log);
         wood(consumer,strippedWood,strippedLog);
         ShapelessRecipeJsonFactory.create(planks,4).input(logs).group("planks").criterion("has_logs", conditionsFromTag(logs)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(slab,6).pattern("###").input('#',planks).group("wooden_slab").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(stairs,4).pattern("#  ").pattern("## ").pattern("###").input('#',planks).group("wooden_stairs").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
+        slab(consumer,slab,planks,"wooden_slab");
+        stairs(consumer,stairs,planks,"wooden_stairs");
         ShapedRecipeJsonFactory.create(fence,3).pattern("W#W").pattern("W#W").input('#', STICK).input('W',planks).group("wooden_fence").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(fenceGate).pattern("#W#").pattern("#W#").input('#', STICK).input('W',planks).group("wooden_fence_gate").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(button).input(planks).criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(pressurePlate).pattern("##").input('#',planks).group("wooden_pressure_plate").criterion("has_planks",conditionsFromItem(planks)).offerTo(consumer);
+    }
+
+    private static void stairs(Consumer<RecipeJsonProvider> consumer, Block stairs, Block material, String group) {
+        ShapedRecipeJsonFactory.create(stairs,4).pattern("#  ").pattern("## ").pattern("###").input('#',material).group(group).criterion("has_mat",conditionsFromItem(material)).offerTo(consumer);
+    }
+
+    private static void slab(Consumer<RecipeJsonProvider> consumer, Block slab, ItemConvertible material, String group) {
+        ShapedRecipeJsonFactory.create(slab,6).pattern("###").input('#',material).group(group).criterion("has_mat",conditionsFromItem(material)).offerTo(consumer);
     }
 
     private static void surrounded(Consumer<RecipeJsonProvider> consumer, ItemConvertible output, ItemConvertible center, ItemConvertible around) {

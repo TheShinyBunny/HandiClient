@@ -4,6 +4,9 @@
 
 package com.handicraft.client.client;
 
+import com.handicraft.client.collectibles.Cape;
+import com.handicraft.client.collectibles.ClientCollectibleCache;
+import com.handicraft.client.collectibles.CollectibleType;
 import com.handicraft.client.mixin.DimensionTypeAccessor;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -73,6 +76,10 @@ public class FakePlayer extends ClientPlayerEntity {
 
     @Override
     public @Nullable Identifier getCapeTexture() {
+        if (cape == null) {
+            Cape c = ClientCollectibleCache.getSelected(CollectibleType.CAPE);
+            return c == null ? null : c.getTextureId();
+        }
         return this.cape;
     }
 

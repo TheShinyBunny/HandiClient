@@ -119,6 +119,11 @@ public class ClientCollectibleCache {
         return selected.get(t) == null;
     }
 
+    public static <T extends Collectible> T getSelected(CollectibleType<T> type) {
+        Collectible c = selected.get(type);
+        return c == null ? null : c.getType() == type ? (T)c : null;
+    }
+
     public static List<Reward> getNextRewards() {
         List<Reward> current = Reward.getByLevel(passLevel);
         for (Reward r : current) {

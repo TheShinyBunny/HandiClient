@@ -19,6 +19,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -98,11 +99,18 @@ public class PlayerChallenges {
      * @param c The challenge list to update to
      */
     public void update(List<ServerChallenge<?>> c) {
+        List<Challenge<?>> newChallenges = new ArrayList<>();
         for (ServerChallenge<?> ch : c) {
             ChallengeInstance i = get(ch);
             if (i == null) {
                 addChallenge(ch);
+                newChallenges.add(ch);
             }
+        }
+        if (newChallenges.size() == 1) {
+            player.sendMessage(new TranslatableText("challenges.new.single",newChallenges.get(0).getText()),false);
+        } else if (newChallenges.size() > 1) {
+            player.sendMessage(new TranslatableText("challenges.new.multiple",newChallenges.size()),false);
         }
         ChallengesManager m = ChallengesManager.get(player.server.getOverworld());
         challenges.removeIf(ci -> m.get(ci.getChallenge().getId()) == null);
