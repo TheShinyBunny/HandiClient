@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "minecraft:block/dark_slab"
+    },
+    "type=double": {
+      "model": "minecraft:block/dark_planks"
+    },
+    "type=top": {
+      "model": "minecraft:block/dark_slab_top"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "hcclient:noto_bold.ttf",
+      "oversample": 32
+    }
+  ]
+}

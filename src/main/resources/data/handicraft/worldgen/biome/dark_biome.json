@@ -1,0 +1,158 @@
+{
+  "precipitation": "none",
+  "category": "none",
+  "depth": 0.5,
+  "scale": 1,
+  "temperature": 0.5,
+  "temperature_modifier": "none",
+  "downfall": 1,
+  "effects": {
+    "fog_color": 10616976,
+    "foliage_color": 383838,
+    "grass_color": 383838,
+    "water_fog_color": 0,
+    "sky_color": 11416573,
+    "water_color": 11416573,
+    "grass_color_modifier": "none",
+    "particle": {
+      "probability": 0.02,
+      "options": {
+        "type": "smoke"
+      }
+    }
+  },
+  "surface_builder": "handicraft:dark_surface",
+  "carvers": {
+    "air": [
+      "cave",
+      "canyon"
+    ],
+    "liquid": [
+
+    ]
+  },
+  "features": [
+    [],
+    [
+      "handicraft:lake_purple_water"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [
+      "handicraft:ore_dark",
+      "handicraft:ore_darkness_diamond",
+      "handicraft:ore_dark_magma"
+    ],
+    [],
+    [
+      "handicraft:dark_flowers_decorated",
+      "handicraft:patch_jack_o_lantern",
+      "handicraft:dark_tree_placer",
+      "handicraft:patch_purple_fire"
+    ],
+    [
+      "freeze_top_layer"
+    ]
+  ],
+  "starts": [
+  ],
+  "spawners": {
+    "monster": [
+      {
+        "type": "wither_skeleton",
+        "weight": 90,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "type": "stray",
+        "weight": 50,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "type": "vex",
+        "weight": 110,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "phantom",
+        "weight": 90,
+        "minCount": 1,
+        "maxCount": 4
+      },
+      {
+        "type": "ghast",
+        "weight": 70,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "cave_spider",
+        "weight": 70,
+        "minCount": 1,
+        "maxCount": 5
+      },
+      {
+        "type": "creeper",
+        "weight": 50,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "zombie_villager",
+        "weight": 110,
+        "minCount": 1,
+        "maxCount": 5
+      },
+      {
+        "type": "husk",
+        "weight": 110,
+        "minCount": 1,
+        "maxCount": 5
+      },
+      {
+        "type": "witch",
+        "weight": 100,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "ravager",
+        "weight": 30,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "evoker",
+        "weight": 70,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ],
+    "creature": [
+      {
+        "type": "skeleton_horse",
+        "weight": 80,
+        "minCount": 1,
+        "maxCount": 6
+      }
+    ],
+    "ambient": [
+      {
+        "type": "bat",
+        "weight": 100,
+        "minCount": 8,
+        "maxCount": 8
+      }
+    ],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "player_spawn_friendly": true
+}

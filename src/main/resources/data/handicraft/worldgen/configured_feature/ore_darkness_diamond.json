@@ -1,0 +1,46 @@
+{
+  "type": "decorated",
+  "config": {
+    "decorator": {
+      "type": "count",
+      "config": {
+        "count": 32
+      }
+    },
+    "feature": {
+      "type": "decorated",
+      "config": {
+        "decorator": {
+          "type": "square",
+          "config": {}
+        },
+        "feature": {
+          "type": "decorated",
+          "config": {
+            "decorator": {
+              "type": "range",
+              "config": {
+                "bottom_offset": 0,
+                "top_offset": 0,
+                "maximum": 128
+              }
+            },
+            "feature": {
+              "type": "ore",
+              "config": {
+                "size": 4,
+                "target": {
+                  "predicate_type":"tag_match",
+                  "tag": "dark_stones"
+                },
+                "state": {
+                  "Name": "darkness_diamond_ore"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

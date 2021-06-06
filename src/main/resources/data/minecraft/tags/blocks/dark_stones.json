@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:dark_stone",
+    "minecraft:shadow_stone",
+    "minecraft:shadow_stone_bricks"
+  ]
+}

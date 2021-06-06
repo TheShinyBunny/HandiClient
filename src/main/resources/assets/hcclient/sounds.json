@@ -1,0 +1,66 @@
+{
+  "jingle_bells": {
+    "sounds": ["hcclient:jingle_bells"]
+  },
+  "spooky": {
+    "sounds": [
+      {
+        "name": "hcclient:spooky",
+        "stream": true
+      }
+    ],
+    "subtitle": "Spooky music plays"
+  },
+  "spooky_scary_skeletons": {
+    "sounds": [
+      {
+        "name": "hcclient:spooky_scary_skeletons",
+        "stream": true
+      }
+    ],
+    "subtitle": "Skeletons Grooving Scarily"
+  },
+  "avatar_theme": {
+    "sounds": [
+      {
+        "name": "hcclient:avatar_theme",
+        "stream": true
+      }
+    ],
+    "subtitle": "Avatar State yip yips"
+  },
+  "level_up": {
+    "sounds": [
+      {
+        "name":"hcclient:levelup",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "Player Leveled Up"
+  },
+  "netherite_furnace_crackles": {
+    "sounds": [
+      {
+        "name": "block/blastfurnace/blastfurnace1",
+        "volume": 1
+      },
+      {
+        "name": "block/blastfurnace/blastfurnace2",
+        "volume": 1
+      },
+      {
+        "name": "block/blastfurnace/blastfurnace3",
+        "volume": 1
+      },
+      {
+        "name": "block/blastfurnace/blastfurnace4",
+        "volume": 1
+      },
+      {
+        "name": "block/blastfurnace/blastfurnace5",
+        "volume": 1
+      }
+    ],
+    "subtitle": "Netherite Furnace Crackles"
+  }
+}
